@@ -1,0 +1,127 @@
+---
+// Cookiemelding volgens de Sitefront-standaard. De melding past zich aan op wat de site echt
+// plaatst: staan er alleen noodzakelijke categorieen in de lijst hieronder, dan is het een korte
+// mededeling met "Begrepen". Komt er later iets bij (statistieken, embeds), zet het dan in
+// `optioneel` en laad het script als <script type="text/plain" data-cookie-categorie="...">:
+// dan verschijnen vanzelf de knoppen voor toestemming en draait het script pas na een ja.
+// De keuze staat in een eigen, functioneel cookie; daarvoor is geen toestemming nodig.
+interface Categorie { id: string; naam: string; uitleg: string }
+const optioneel: Categorie[] = [];
+const heeftKeuze = optioneel.length > 0;
+---
+<div
+  id="cookiemelding"
+  class="cookiemelding fixed inset-x-3 bottom-3 z-40 hidden max-w-[27rem] rounded-md border border-inkt/15 bg-wit p-4 text-sm text-tekst sm:inset-x-auto sm:bottom-5 sm:left-5 sm:p-6"
+  role="region"
+  aria-labelledby="cookiemelding-kop"
+  data-categorieen={optioneel.map((c) => c.id).join(',')}
+>
+  <p id="cookiemelding-kop" class="font-display text-base font-extrabold tracking-[-0.02em] text-inkt">Cookies</p>
+  {heeftKeuze ? (
+    <p class="mt-2">We gebruiken een functioneel cookie om uw keuze te onthouden. Andere cookies plaatsen we alleen als u daar ja op zegt.</p>
+  ) : (
+    <p class="mt-1.5">Deze site volgt u niet: geen statistieken, geen advertenties. Alleen een functioneel cookie onthoudt dat u deze melding zag.</p>
+  )}
+
+  {heeftKeuze && (
+    <fieldset class="instellingen mt-4 hidden border-t border-inkt/10 pt-4">
+      <legend class="sr-only">Cookie-instellingen</legend>
+      <label class="flex gap-3 py-1.5">
+        <input type="checkbox" checked disabled class="mt-1 h-4 w-4 accent-bos" />
+        <span><span class="font-semibold text-inkt">Noodzakelijk</span><br />Onthoudt uw keuze. Altijd aan.</span>
+      </label>
+      {optioneel.map((c) => (
+        <label class="flex gap-3 py-1.5">
+          <input type="checkbox" name={c.id} class="mt-1 h-4 w-4 accent-bos" />
+          <span><span class="font-semibold text-inkt">{c.naam}</span><br />{c.uitleg}</span>
+        </label>
+      ))}
+    </fieldset>
+  )}
+
+  <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 sm:mt-4">
+    {heeftKeuze ? (
+      <>
+        <button type="button" data-actie="alles" class="rounded-md bg-bos px-4 py-2.5 font-display font-bold text-wit transition-colors hover:bg-bos-diep">Accepteren</button>
+        <button type="button" data-actie="weiger" class="rounded-md border border-inkt/80 px-4 py-2.5 font-display font-bold text-inkt transition-colors hover:border-bos hover:text-bos">Weigeren</button>
+        <button type="button" data-actie="instellingen" class="py-2 font-semibold text-bos underline underline-offset-2" aria-expanded="false">Instellingen</button>
+        <button type="button" data-actie="bewaar" class="hidden rounded-md border border-inkt/80 px-4 py-2.5 font-display font-bold text-inkt transition-colors hover:border-bos hover:text-bos">Keuze opslaan</button>
+      </>
+    ) : (
+      <button type="button" data-actie="weiger" class="rounded-md bg-bos px-4 py-2.5 font-display font-bold text-wit transition-colors hover:bg-bos-diep">Begrepen</button>
+    )}
+    <a href="/privacy/#cookies" class="py-2 font-semibold text-bos underline underline-offset-2">Meer over cookies</a>
+  </div>
+</div>
+
+<style>
+  .cookiemelding { box-shadow: 0 6px 24px rgb(20 32 25 / 0.12); }
+  .cookiemelding:not(.hidden) { animation: in 240ms ease-out; }
+  @keyframes in { from { opacity: 0; transform: translateY(8px); } }
+</style>
+
+<script>
+  const NAAM = 'afvalmeldpunt_cookiekeuze';
+  const VERSIE = 1; // ophogen als er een categorie bijkomt: dan vragen we het opnieuw
+  const melding = document.getElementById('cookiemelding')!;
+  const categorieen = (melding.dataset.categorieen || '').split(',').filter(Boolean);
+
+  type Keuze = { v: number; ja: string[] };
+  function lees(): Keuze | null {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + NAAM + '=([^;]*)'));
+    if (!m) return null;
+    try {
+      const k = JSON.parse(decodeURIComponent(m[1])) as Keuze;
+      return k.v === VERSIE ? k : null;
+    } catch { return null; }
+  }
+  function bewaar(ja: string[]) {
+    const waarde = encodeURIComponent(JSON.stringify({ v: VERSIE, ja }));
+    const veilig = location.protocol === 'https:' ? '; Secure' : '';
+    // Twaalf maanden: daarna vragen we opnieuw, zoals de Autoriteit Persoonsgegevens aanraadt.
+    document.cookie = `${NAAM}=${waarde}; Max-Age=${60 * 60 * 24 * 365}; Path=/; SameSite=Lax${veilig}`;
+    activeer(ja);
+    melding.classList.add('hidden');
+  }
+  // Scripts die wachten op toestemming staan als type="text/plain"; pas na een ja draaien ze.
+  function activeer(ja: string[]) {
+    document.querySelectorAll<HTMLScriptElement>('script[type="text/plain"][data-cookie-categorie]').forEach((oud) => {
+      if (!ja.includes(oud.dataset.cookieCategorie!)) return;
+      const nieuw = document.createElement('script');
+      for (const a of oud.attributes) if (a.name !== 'type') nieuw.setAttribute(a.name, a.value);
+      nieuw.text = oud.text;
+      oud.replaceWith(nieuw);
+    });
+  }
+  function toon() {
+    const k = lees();
+    melding.querySelectorAll<HTMLInputElement>('input[name]').forEach((i) => { i.checked = !!k?.ja.includes(i.name); });
+    melding.classList.remove('hidden');
+  }
+
+  melding.addEventListener('click', (e) => {
+    const knop = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-actie]');
+    if (!knop) return;
+    const actie = knop.dataset.actie;
+    if (actie === 'alles') bewaar(categorieen);
+    if (actie === 'weiger') bewaar([]);
+    if (actie === 'bewaar') bewaar([...melding.querySelectorAll<HTMLInputElement>('input[name]:checked')].map((i) => i.name));
+    if (actie === 'instellingen') {
+      melding.querySelector('.instellingen')?.classList.remove('hidden');
+      melding.querySelector('[data-actie="bewaar"]')?.classList.remove('hidden');
+      knop.classList.add('hidden');
+    }
+  });
+  // Elke link naar #cookie-instellingen (footer, privacyverklaring) opent de melding weer.
+  document.addEventListener('click', (e) => {
+    const a = (e.target as HTMLElement).closest('a[href$="#cookie-instellingen"]');
+    if (!a) return;
+    e.preventDefault();
+    toon();
+    melding.querySelector<HTMLButtonElement>('button')?.focus();
+  });
+
+  const keuze = lees();
+  if (keuze) activeer(keuze.ja);
+  else toon();
+</script>

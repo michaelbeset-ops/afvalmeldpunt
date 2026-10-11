@@ -67,3 +67,16 @@ Fonts: Schibsted Grotesk 800 (koppen), Public Sans (tekst).
 - [[AANLEVEREN: standaard of optie?]] (Michael zei "we bieden een vulgraadsensor aan")
 - [[AANLEVEREN: technische gegevens vulgraadsensor]] (techniek, voeding, meldmoment): bewust niets verzonnen.
 - Dashboard: voorbeeldmelding "Bijna vol" met label "Sensor" naast "Bewoner"-meldingen bij container 0123.
+
+## SEO, privacy en cookies (11-10-2026)
+- Cookiemelding (src/components/Cookiemelding.astro): de site plaatst alleen een functioneel cookie
+  (`afvalmeldpunt_cookiekeuze`, 12 maanden), dus een korte mededeling met "Begrepen". Komt er later
+  analytics of een embed bij: categorie in `optioneel` zetten en het script als
+  `type="text/plain" data-cookie-categorie="..."` laden, dan verschijnen accepteren/weigeren/instellingen
+  vanzelf. "Cookie-instellingen" in de footer opent de melding opnieuw. Test: tools/test-cookies.mjs.
+- Privacyverklaring uitgebreid: grondslag, verwerkers (Web3Forms, GitHub), doorgifte buiten de EU,
+  beveiliging, cookietabel, alle AVG-rechten, wijzigingen, inhoudsopgave rechts op desktop.
+- SEO: JSON-LD (WebSite + WebPage, alleen vaststaande gegevens), og:site_name, og:image:alt, twitter-tags,
+  apple-touch-icon, 404-pagina (noindex, niet in sitemap), interne links naar /privacy/ (geen redirect).
+- Lighthouse mobiel: / en /privacy/ 100/100/100/100.
+- Nieuw aan te leveren: [[AANLEVEREN: vestigingsadres]] voor de privacyverklaring.

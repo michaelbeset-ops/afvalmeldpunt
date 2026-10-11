@@ -11,6 +11,6 @@ export default defineConfig({
   devToolbar: { enabled: false },
   build: { inlineStylesheets: 'always' },
   // De losse plaatje-pagina is een werkbestand (voor de graveerder), geen pagina voor Google.
-  integrations: [sitemap({ filter: (p) => !p.includes('/plaatje') })],
+  integrations: [sitemap({ filter: (p) => !p.includes('/plaatje') && !p.includes('/404') })],
   vite: { plugins: [tailwindcss()] },
 });
