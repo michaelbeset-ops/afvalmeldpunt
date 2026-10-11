@@ -2,46 +2,107 @@
 import Basis from '../layouts/Basis.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+
+const hoofdstukken = [
+  ['verantwoordelijke', 'Wie is verantwoordelijk'],
+  ['gegevens', 'Welke gegevens'],
+  ['doel', 'Waarvoor en op welke grond'],
+  ['ontvangers', 'Wie de gegevens ziet'],
+  ['bewaren', 'Hoe lang we bewaren'],
+  ['beveiliging', 'Beveiliging'],
+  ['cookies', 'Cookies'],
+  ['meldingen', 'Meldingen van bewoners'],
+  ['rechten', 'Uw rechten'],
+  ['wijzigingen', 'Wijzigingen'],
+];
 ---
-<Basis titel="Privacyverklaring | afvalmeldpunt" omschrijving="Hoe afvalmeldpunt.nl omgaat met de gegevens uit het demoformulier. Deze website plaatst geen cookies.">
+<Basis titel="Privacyverklaring | afvalmeldpunt" omschrijving="Hoe afvalmeldpunt.nl omgaat met de gegevens uit het demoformulier, welke cookies de site gebruikt en welke rechten u heeft.">
   <Header />
   <main id="hoofdinhoud" class="mx-auto max-w-[90rem] px-4 pt-10 pb-24 sm:px-8 sm:pt-16 lg:px-16">
-    <article class="privacy max-w-[42rem]">
-      <h1 class="text-[clamp(2rem,1.4rem+3vw,3.75rem)]">Privacyverklaring</h1>
-      <p class="mt-4 text-sm text-tekst-2">Versie oktober 2026</p>
+    <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+      <article class="privacy max-w-[42rem] lg:col-span-7">
+        <h1 class="text-[clamp(2rem,1.4rem+3vw,3.75rem)]">Privacyverklaring</h1>
+        <p class="mt-4 text-sm text-tekst-2">Laatst bijgewerkt: 11 oktober 2026</p>
+        <p class="intro">Deze verklaring gaat over de website afvalmeldpunt.nl. Kort gezegd: we vragen alleen gegevens als u zelf een demo aanvraagt, we volgen u niet en we verkopen niets door.</p>
 
-      <h2>Wie is verantwoordelijk</h2>
-      <p>[[AANLEVEREN: bedrijfsnaam]] (KvK [[AANLEVEREN: KvK-nummer]]) is verantwoordelijk voor deze website, afvalmeldpunt.nl. Contact: [[AANLEVEREN: e-mailadres voor demo-aanvragen]].</p>
+        <h2 id="verantwoordelijke">Wie is verantwoordelijk</h2>
+        <p>[[AANLEVEREN: bedrijfsnaam]], KvK [[AANLEVEREN: KvK-nummer]], [[AANLEVEREN: vestigingsadres]], is verantwoordelijk voor de verwerking van uw gegevens via deze website. Vragen over privacy kunt u mailen naar [[AANLEVEREN: e-mailadres voor demo-aanvragen]].</p>
 
-      <h2>Welke gegevens we verwerken</h2>
-      <p>Alleen wat u zelf invult in het formulier voor een demo-aanvraag: uw naam, organisatie, e-mailadres, en als u die invult ook uw telefoonnummer en bericht.</p>
+        <h2 id="gegevens">Welke gegevens we verwerken</h2>
+        <p>Alleen wat u zelf invult in het formulier voor een demo-aanvraag:</p>
+        <ul>
+          <li>naam en organisatie</li>
+          <li>e-mailadres</li>
+          <li>telefoonnummer en bericht, als u die invult</li>
+        </ul>
+        <p>Daarnaast ziet onze hostingpartij technische gegevens die elke website ontvangt, zoals uw IP-adres en het type browser. Die gebruiken wij niet.</p>
 
-      <h2>Waarvoor</h2>
-      <p>We gebruiken deze gegevens alleen om contact met u op te nemen over uw aanvraag. We verkopen ze niet en gebruiken ze niet voor reclame.</p>
+        <h2 id="doel">Waarvoor en op welke grond</h2>
+        <p>We gebruiken uw gegevens alleen om contact met u op te nemen over uw aanvraag en u een demo te geven. De grond daarvoor is dat u ons er zelf om vraagt: het is nodig om op uw verzoek een overeenkomst voor te bereiden (artikel 6 lid 1 sub b AVG). We gebruiken uw gegevens niet voor nieuwsbrieven of reclame en verkopen ze aan niemand.</p>
 
-      <h2>Hoe het formulier werkt</h2>
-      <p>Het formulier wordt verstuurd via Web3Forms. Die dienst zet uw aanvraag om in een e-mail aan ons en verwerkt uw gegevens daarvoor.</p>
+        <h2 id="ontvangers">Wie de gegevens ziet</h2>
+        <p>Wij schakelen twee partijen in die gegevens voor ons verwerken:</p>
+        <ul>
+          <li><strong>Web3Forms</strong> verstuurt het formulier als e-mail naar ons.</li>
+          <li><strong>GitHub</strong> (GitHub Pages) host de website en verwerkt daarbij technische gegevens, zoals IP-adressen, voor de beveiliging.</li>
+        </ul>
+        <p>Deze diensten kunnen gegevens buiten de Europese Unie verwerken, onder meer in de Verenigde Staten. Dat gebeurt op basis van de waarborgen die de AVG daarvoor kent, zoals het EU-VS-gegevensprivacykader of standaardcontractbepalingen van de Europese Commissie. Verder delen we uw gegevens alleen als de wet ons daartoe verplicht.</p>
 
-      <h2>Hoe lang we gegevens bewaren</h2>
-      <p>[[AANLEVEREN: bewaartermijn van demo-aanvragen]]</p>
+        <h2 id="bewaren">Hoe lang we gegevens bewaren</h2>
+        <p>[[AANLEVEREN: bewaartermijn van demo-aanvragen]]</p>
 
-      <h2>Cookies en meten</h2>
-      <p>Deze website plaatst geen cookies en gebruikt geen statistieken of trackers. De lettertypes staan op onze eigen server, er gaan geen verzoeken naar Google.</p>
+        <h2 id="beveiliging">Beveiliging</h2>
+        <p>De website draait alleen via een beveiligde verbinding (https). Het formulier gaat versleuteld naar Web3Forms.</p>
 
-      <h2>Hosting</h2>
-      <p>De website wordt gehost op GitHub Pages. GitHub kan voor de beveiliging technische gegevens verwerken, zoals IP-adressen.</p>
+        <h2 id="cookies">Cookies</h2>
+        <p>Deze website gebruikt geen statistieken, geen advertentiecookies en geen trackers. De lettertypes staan op onze eigen server, er gaan geen verzoeken naar Google of andere partijen.</p>
+        <p>We plaatsen één functioneel cookie:</p>
+        <div class="tabel-scroll">
+          <table>
+            <thead><tr><th scope="col">Naam</th><th scope="col">Waarvoor</th><th scope="col">Bewaartermijn</th></tr></thead>
+            <tbody><tr><td><code>afvalmeldpunt_cookiekeuze</code></td><td>Onthoudt dat u de cookiemelding heeft gezien, zodat die niet steeds terugkomt.</td><td>12 maanden</td></tr></tbody>
+          </table>
+        </div>
+        <p>Voor een functioneel cookie is geen toestemming nodig. U kunt het altijd verwijderen via de instellingen van uw browser. <a id="cookie-instellingen" href="#cookie-instellingen">Cookiemelding opnieuw tonen</a>.</p>
 
-      <h2>Meldingen via de meldpagina</h2>
-      <p>Deze verklaring gaat over de website afvalmeldpunt.nl. Voor meldingen die bewoners via de QR-code doen: [[AANLEVEREN: privacyverklaring van het meldsysteem, of een link ernaar]].</p>
+        <h2 id="meldingen">Meldingen van bewoners</h2>
+        <p>Deze verklaring gaat over de website afvalmeldpunt.nl. Voor meldingen die bewoners via de QR-code op een container doen: [[AANLEVEREN: privacyverklaring van het meldsysteem, of een link ernaar]].</p>
 
-      <h2>Uw rechten</h2>
-      <p>U mag vragen welke gegevens we van u hebben, en ze laten verbeteren of verwijderen. Mail daarvoor naar [[AANLEVEREN: e-mailadres voor demo-aanvragen]]. Bent u het niet eens met hoe we met uw gegevens omgaan, dan kunt u een klacht indienen bij de Autoriteit Persoonsgegevens.</p>
-    </article>
+        <h2 id="rechten">Uw rechten</h2>
+        <p>U mag ons vragen om uw gegevens in te zien, te verbeteren, te verwijderen of over te dragen. U kunt ook bezwaar maken tegen het gebruik ervan of vragen het te beperken. Mail daarvoor naar [[AANLEVEREN: e-mailadres voor demo-aanvragen]]. We reageren binnen een maand.</p>
+        <p>Bent u het niet eens met hoe we met uw gegevens omgaan, laat het ons dan eerst weten. U heeft ook het recht een klacht in te dienen bij de <a href="https://autoriteitpersoonsgegevens.nl" rel="noopener">Autoriteit Persoonsgegevens</a>.</p>
+
+        <h2 id="wijzigingen">Wijzigingen</h2>
+        <p>Gaan we iets anders doen met gegevens, bijvoorbeeld omdat er een dienst bijkomt, dan passen we deze verklaring aan. Bovenaan ziet u wanneer dat voor het laatst gebeurde.</p>
+      </article>
+
+      <nav aria-labelledby="inhoud-kop" class="hidden lg:col-span-4 lg:col-start-9 lg:block">
+        <div class="sticky top-8 border-l border-inkt/15 pl-6">
+          <p id="inhoud-kop" class="font-display font-extrabold tracking-[-0.02em] text-inkt">Op deze pagina</p>
+          <ol class="mt-3 grid gap-1.5 text-sm">
+            {hoofdstukken.map(([id, naam]) => <li><a class="text-tekst underline-offset-4 hover:text-bos hover:underline" href={`#${id}`}>{naam}</a></li>)}
+          </ol>
+        </div>
+      </nav>
+    </div>
   </main>
   <Footer />
 </Basis>
 
 <style>
-  .privacy h2 { margin-top: 2.75rem; font-size: 1.5rem; }
-  .privacy p { margin-top: 0.75rem; }
+  .privacy .intro { margin-top: 1.75rem; font-size: var(--text-lg); color: var(--color-inkt); }
+  .privacy h2 { margin-top: 2.75rem; font-size: 1.5rem; scroll-margin-top: 1.5rem; }
+  .privacy p, .privacy ul, .tabel-scroll { margin-top: 0.75rem; }
+  .privacy ul { padding-left: 1.25rem; list-style: square; }
+  .privacy li { margin-top: 0.25rem; }
+  .privacy li::marker { color: var(--color-bos); }
+  .privacy strong { color: var(--color-inkt); }
+  .privacy a { color: var(--color-bos); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+  .tabel-scroll { overflow-x: auto; }
+  .privacy table { width: 100%; min-width: 30rem; border-collapse: collapse; font-size: var(--text-sm); }
+  .privacy th, .privacy td { text-align: left; vertical-align: top; padding: 0.6rem 0.75rem 0.6rem 0; border-bottom: 1px solid var(--color-lijn); }
+  .privacy th { color: var(--color-inkt); font-weight: 600; }
+  .privacy code { font-size: 0.85em; word-break: break-all; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>

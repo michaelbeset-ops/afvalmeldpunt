@@ -1,9 +1,16 @@
 ---
 import '../styles/global.css';
-interface Props { titel: string; omschrijving: string; noindex?: boolean }
-const { titel, omschrijving, noindex = false } = Astro.props;
+import Cookiemelding from '../components/Cookiemelding.astro';
+interface Props { titel: string; omschrijving: string; noindex?: boolean; jsonld?: Record<string, unknown>[] }
+const { titel, omschrijving, noindex = false, jsonld = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogBeeld = new URL('/og.jpg', Astro.site);
+const ogAlt = 'Aluminium plaatje met QR-code van afvalmeldpunt, met de kop: Melden bij de container zelf, met één scan.';
+// Alleen feiten die vaststaan (naam, adres van de site, taal). Organisatiegegevens zoals KvK,
+// adres en telefoon komen er pas bij als ze zijn aangeleverd.
+const site = { '@type': 'WebSite', '@id': new URL('/#website', Astro.site).href, name: 'afvalmeldpunt', url: Astro.site!.href, inLanguage: 'nl-NL' };
+const pagina = { '@type': 'WebPage', '@id': canonical.href + '#pagina', url: canonical.href, name: titel, description: omschrijving, inLanguage: 'nl-NL', isPartOf: { '@id': site['@id'] } };
+const graaf = { '@context': 'https://schema.org', '@graph': [site, pagina, ...jsonld] };
 ---
 <!doctype html>
 <html lang="nl">
@@ -14,19 +21,30 @@ const ogBeeld = new URL('/og.jpg', Astro.site);
     <meta name="description" content={omschrijving} />
     {noindex ? <meta name="robots" content="noindex, nofollow" /> : <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#142019" />
+    <meta property="og:site_name" content="afvalmeldpunt" />
     <meta property="og:title" content={titel} />
     <meta property="og:description" content={omschrijving} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="nl_NL" />
     <meta property="og:image" content={ogBeeld} />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={titel} />
+    <meta name="twitter:description" content={omschrijving} />
+    <meta name="twitter:image" content={ogBeeld} />
+    <meta name="twitter:image:alt" content={ogAlt} />
+    {!noindex && <script type="application/ld+json" set:html={JSON.stringify(graaf)} />}
   </head>
   <body>
     <a href="#hoofdinhoud" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-wit focus:px-4 focus:py-2 focus:font-semibold focus:text-inkt">Naar de inhoud</a>
     <slot />
+    <Cookiemelding />
   </body>
 </html>

@@ -1,0 +1,18 @@
+---
+import Basis from '../layouts/Basis.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<Basis titel="Pagina niet gevonden | afvalmeldpunt" omschrijving="Deze pagina bestaat niet (meer)." noindex>
+  <Header />
+  <main id="hoofdinhoud" class="mx-auto max-w-[90rem] px-4 pt-14 pb-32 sm:px-8 sm:pt-24 lg:px-16">
+    <p class="font-display font-extrabold text-bos">404</p>
+    <h1 class="mt-3 max-w-[16ch] text-[clamp(2.25rem,1.5rem+3.4vw,4rem)]">Deze pagina is al opgehaald.</h1>
+    <p class="mt-5 max-w-[30rem] text-lg">De pagina die u zoekt bestaat niet, of niet meer. Misschien was de link oud of zat er een typfout in.</p>
+    <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+      <a href="/" class="rounded-md bg-bos px-5 py-3.5 font-display font-bold text-wit transition-colors hover:bg-bos-diep">Naar de startpagina</a>
+      <a href="/#melden" class="py-2 font-semibold text-bos underline underline-offset-2">Iets melden bij een container</a>
+    </div>
+  </main>
+  <Footer />
+</Basis>
