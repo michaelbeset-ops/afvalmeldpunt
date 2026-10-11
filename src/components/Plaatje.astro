@@ -1,0 +1,143 @@
+---
+// Het meldplaatje: 2 mm aluminium, geborsteld en geanodiseerd, met een bosgroen
+// geanodiseerde strook waar het logo doorheen gelaserd is (dan komt het blanke metaal
+// tevoorschijn). Tekst en QR zijn donker gelaserd, licht verdiept.
+// Plaat 300 x 440 (ca. 75 x 110 mm); het canvas is groter voor dikte en slagschaduw.
+import { maakQr } from '../lib/qr.mjs';
+import { merkPaden } from '../lib/merk.mjs';
+import woordmerk from '../lib/woordmerk.json';
+
+export const PLAATJE_VIEWBOX = '0 0 320 464';
+
+interface Props { id?: string; class?: string; nummer?: string; titel?: string; schaduw?: boolean }
+const { id = 'pl', class: klasse = '', nummer = '0123', titel = 'Voorbeeld van een meldplaatje met QR-code', schaduw = true } = Astro.props;
+
+const qr = maakQr();
+const modulemaat = 5.6; // 4 modules stille zone boven en onder de code
+const qrX = 46; // zelfde linkerkant als logo en tekst: één strakke lijn
+const qrY = 178;
+const gravure = '#1f2a25';
+const strook = 78;
+const schroeven: [number, number, number][] = [[22, 22, 20], [278, 22, 65], [22, 418, 110], [278, 418, 160]];
+// Verdiepte gravure: bovenrand in de schaduw, onderrand vangt licht.
+const lagen = [
+  { dy: 0.9, kleur: '#ffffff', op: 0.75 },
+  { dy: -0.5, kleur: '#000000', op: 0.18 },
+  { dy: 0, kleur: gravure, op: 1 },
+];
+---
+<svg class={klasse} viewBox="0 0 320 464" role={titel ? 'img' : undefined} aria-labelledby={titel ? `${id}-t` : undefined} aria-hidden={titel ? undefined : 'true'} xmlns="http://www.w3.org/2000/svg">
+  {titel && <title id={`${id}-t`}>{titel}</title>}
+  <defs>
+    <clipPath id={`${id}-vorm`}><rect x="2.5" y="2.5" width="295" height="435" rx="12" /></clipPath>
+    <linearGradient id={`${id}-alu`} x1="0" y1="0" x2="1" y2="0.25">
+      <stop offset="0" stop-color="#dfe3e6" />
+      <stop offset="0.45" stop-color="#eceef0" />
+      <stop offset="1" stop-color="#d6dadd" />
+    </linearGradient>
+    <linearGradient id={`${id}-groen`} x1="0" y1="0" x2="1" y2="0.3">
+      <stop offset="0" stop-color="#1a6040" />
+      <stop offset="0.5" stop-color="#22744a" />
+      <stop offset="1" stop-color="#175838" />
+    </linearGradient>
+    <!-- afschuining: licht aan de bovenkant, donker aan de onderkant -->
+    <linearGradient id={`${id}-bevel`} x1="0" y1="0" x2="0.15" y2="1">
+      <stop offset="0" stop-color="#ffffff" />
+      <stop offset="0.5" stop-color="#b9c0c5" />
+      <stop offset="1" stop-color="#727a81" />
+    </linearGradient>
+    <!-- de glans die schuin over het metaal loopt -->
+    <linearGradient id={`${id}-glans`} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0.18" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="0.36" stop-color="#ffffff" stop-opacity="0.38" />
+      <stop offset="0.46" stop-color="#ffffff" stop-opacity="0.06" />
+      <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="0.8" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+    <radialGradient id={`${id}-kop`} cx="0.38" cy="0.32" r="0.8">
+      <stop offset="0" stop-color="#fdfdfd" />
+      <stop offset="0.5" stop-color="#c4cacf" />
+      <stop offset="1" stop-color="#7c848b" />
+    </radialGradient>
+    <radialGradient id={`${id}-verzinking`} cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.7" stop-color="#5f676e" />
+      <stop offset="1" stop-color="#a7aeb4" />
+    </radialGradient>
+    <!-- Geborsteld: zeer fijne horizontale ruis, plus wat wolkige variatie in de korrel. -->
+    <filter id={`${id}-borstel`} x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0016 1.4" numOctaves="3" seed="21" result="fijn" />
+      <feColorMatrix in="fijn" type="matrix" values="0 0 0 0 0.2  0 0 0 0 0.23  0 0 0 0 0.25  0 0 0.7 0 -0.31" result="donker" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.003 0.8" numOctaves="2" seed="5" result="fijn2" />
+      <feColorMatrix in="fijn2" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0.8 0 -0.36" result="licht" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="2" seed="9" result="wolk" />
+      <feColorMatrix in="wolk" type="matrix" values="0 0 0 0 0.3  0 0 0 0 0.33  0 0 0 0 0.35  0 0 0.35 0 -0.12" result="vlek" />
+      <feMerge result="korrel"><feMergeNode in="vlek" /><feMergeNode in="donker" /><feMergeNode in="licht" /></feMerge>
+      <feComposite in="korrel" in2="SourceAlpha" operator="in" result="binnen" />
+      <feMerge><feMergeNode in="SourceGraphic" /><feMergeNode in="binnen" /></feMerge>
+    </filter>
+    <filter id={`${id}-zacht`} x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" /></filter>
+  </defs>
+
+  {schaduw && <rect x="12" y="20" width="296" height="434" rx="16" fill="#0d1612" opacity="0.28" filter={`url(#${id}-zacht)`} />}
+
+  <g transform="translate(10 8)">
+    <!-- dikte van de plaat, zichtbaar aan de onderkant -->
+    <rect x="0" y="3" width="300" height="440" rx="14" fill="#6f777e" />
+    <!-- afgeschuinde rand -->
+    <rect x="0" y="0" width="300" height="440" rx="14" fill={`url(#${id}-bevel)`} />
+
+    <g clip-path={`url(#${id}-vorm)`}>
+      <!-- het vlak, 2,5 eenheden binnen de rand -->
+      <rect x="2.5" y="2.5" width="295" height="435" rx="12" fill={`url(#${id}-alu)`} filter={`url(#${id}-borstel)`} />
+      <rect x="2.5" y="2.5" width="295" height={strook - 2.5} fill={`url(#${id}-groen)`} filter={`url(#${id}-borstel)`} />
+      <rect x="2.5" y={strook} width="295" height="1.2" fill="#0e3b25" opacity="0.5" />
+      <rect x="2.5" y="2.5" width="295" height="435" fill={`url(#${id}-glans)`} />
+    </g>
+
+    <!-- logo door de groene laag gelaserd: blank aluminium -->
+    <g transform="translate(46 23) scale(0.62)">
+      <g transform="translate(0 1.2)" opacity="0.55" set:html={merkPaden('#0b2f1d')} />
+      <path transform="translate(0 1.2)" d={woordmerk.d} fill="#0b2f1d" opacity="0.55" />
+      <g set:html={merkPaden('#e6ebe8')} />
+      <path d={woordmerk.d} fill="#e6ebe8" />
+    </g>
+
+    <g font-family="'Schibsted Grotesk Variable', 'Arial Narrow', sans-serif">
+      {lagen.map((l) => (
+        <g transform={`translate(0 ${l.dy})`} fill={l.kleur} opacity={l.op}>
+          <text x="46" y="124" font-size="31" font-weight="800" letter-spacing="-0.9">Melden?</text>
+          <text x="46" y="156" font-size="31" font-weight="800" letter-spacing="-0.9">Scan de code.</text>
+          <text x="46" y="401" font-size="14" font-weight="700" letter-spacing="0.2">Container {nummer}</text>
+        </g>
+      ))}
+      <!-- "voorbeeld" als gegraveerd kadertje: niemand moet dit nummer voor echt houden -->
+      <rect x="178" y="388" width="76" height="19" rx="3" fill="none" stroke={gravure} stroke-width="1.2" />
+      <text x="216" y="401.5" font-size="11.5" font-weight="700" text-anchor="middle" fill={gravure} letter-spacing="0.4">voorbeeld</text>
+    </g>
+
+    <!-- QR, dezelfde code als public/qr-afvalmeldpunt.svg; een haarfijn licht randje eronder -->
+    <g transform={`translate(${qrX} ${qrY}) scale(${modulemaat})`}>
+      <g transform="translate(0 0.12)" fill="#ffffff" opacity="0.6">
+        <path d={qr.d} /><path fill-rule="evenodd" d={qr.finders} />
+      </g>
+      <g fill={gravure}>
+        <path d={qr.d} />
+        <path fill-rule="evenodd" d={qr.finders} />
+        <g transform={`translate(${qr.v0 + 1} ${qr.v0 + 1}) scale(${7 / 48})`} set:html={merkPaden(gravure)} />
+      </g>
+    </g>
+
+    <!-- verzonken kruiskopschroeven -->
+    {schroeven.map(([x, y, hoek]) => (
+      <g transform={`translate(${x} ${y})`}>
+        <circle r="9" fill={`url(#${id}-verzinking)`} />
+        <circle r="7.4" fill={`url(#${id}-kop)`} />
+        <circle r="7.4" fill="none" stroke="#5c646b" stroke-width="0.6" />
+        <g transform={`rotate(${hoek})`}>
+          <path d="M-4.4 -0.8H4.4V0.8H-4.4ZM-0.8 -4.4H0.8V4.4H-0.8Z" fill="#4b535a" />
+          <path d="M-4.4 0.8H4.4M0.8 -4.4V4.4" stroke="#ffffff" stroke-opacity="0.5" stroke-width="0.4" />
+        </g>
+      </g>
+    ))}
+  </g>
+</svg>

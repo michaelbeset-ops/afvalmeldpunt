@@ -1,0 +1,188 @@
+---
+// De hero is een doorsnede: boven het maaiveld een rij inworpzuilen op hun
+// veiligheidsplatform, eronder de betonputten met de bakken. Detail A vergroot het
+// meldplaatje. Beeld en put zitten in hetzelfde grid, zodat de zuilen op elk scherm
+// precies op het maaiveld staan.
+import Header from './Header.astro';
+import Plaatje from './Plaatje.astro';
+import { zuil, put } from '../lib/tekening';
+
+const ZUILEN = [
+  { c: 70, soort: 'papier', band: '#2f6496' },
+  { c: 190, soort: 'pmd', band: '#e07b26' },
+  { c: 310, soort: 'rest', band: '#98a1a6', plaatje: true },
+];
+
+// Gevels in lijnwerk, zoals op een bouwtekening: plaatsen de zuilen in een straat.
+const gevels = `
+  <g fill="none" stroke="#142019" stroke-opacity="0.16" stroke-width="1.2" mask="url(#gevelmasker)">
+    <path d="M0 372V150L64 92L128 150V372"/>
+    <path d="M18 196h30v40h-30zM80 196h30v40h-30zM18 268h30v40h-30zM80 268h26v104"/><path d="M106 268v104"/>
+    <path d="M128 372V122H262V372M128 140H262"/>
+    <path d="M146 166h28v44h-28zM216 166h28v44h-28zM146 246h28v44h-28zM216 246h28v44h-28z"/>
+    <path d="M262 372V156L326 104L390 156V372"/>
+    <path d="M286 186h22v34h-22zM344 186h22v34h-22z"/>
+    <path d="M0 372H392" stroke-opacity="0.3"/>
+  </g>`;
+
+
+---
+<section class="hero relative flex min-h-svh flex-col bg-papier" aria-labelledby="hero-kop">
+  <Header />
+
+  <div class="raster flex-1">
+    <div class="grondvlak" aria-hidden="true"></div>
+
+    <div class="kop pt-3 sm:pt-6 lg:pt-2">
+      <p class="mb-3 text-sm font-semibold text-tekst-2 sm:mb-5">Voor gemeenten, afvalinzamelaars en woningcorporaties</p>
+      <h1 id="hero-kop" class="max-w-[13ch] text-hero">Melden bij de container zelf, met één scan.</h1>
+    </div>
+
+    <div class="tekst">
+      <p class="max-w-[34rem] text-base sm:text-lg">
+        Een aluminium plaatje met QR-code op elke ondergrondse container. Bewoners melden in de
+        browser wat er mis is, zonder app of account. U ziet de meldingen per container in een dashboard.
+      </p>
+      <div class="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 lg:mt-8">
+        <a href="#demo" class="knop inline-flex items-center gap-2.5 rounded-md bg-bos px-5 py-3.5 font-display text-base font-bold text-wit shadow-knop transition-colors duration-200 hover:bg-bos-diep">
+          Demo aanvragen
+          <svg class="pijl h-4 w-4 transition-transform duration-200" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        </a>
+        <a href="#melden" class="bewoner group inline-flex items-center gap-2 py-2 font-semibold underline decoration-2 underline-offset-[6px] transition-colors duration-200">
+          Ik wil iets melden
+          <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v11M3.5 9 8 13.5 12.5 9" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- boven het maaiveld -->
+    <div class="beeld">
+      <svg class="block h-auto w-full" viewBox="0 0 640 380" aria-hidden="true">
+        <defs>
+          <linearGradient id="lijf" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#2c3431" /><stop offset="0.28" stop-color="#4b5551" /><stop offset="0.7" stop-color="#3a4340" /><stop offset="1" stop-color="#262d2a" />
+          </linearGradient>
+          <linearGradient id="kop" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#323a37" /><stop offset="0.3" stop-color="#56605b" /><stop offset="1" stop-color="#2c3431" />
+          </linearGradient>
+          <!-- de trommel is een liggende cilinder: licht in het midden -->
+          <linearGradient id="trommel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#7f898e" /><stop offset="0.42" stop-color="#e9edef" /><stop offset="1" stop-color="#848e93" />
+          </linearGradient>
+          <!-- gevels lopen links zacht weg in plaats van hard af te breken -->
+          <linearGradient id="gevelverloop" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#fff" stop-opacity="0" /><stop offset="0.28" stop-color="#fff" />
+          </linearGradient>
+          <mask id="gevelmasker" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="380"><rect width="400" height="380" fill="url(#gevelverloop)" /></mask>
+          <pattern id="traanplaat" width="8" height="5" patternUnits="userSpaceOnUse">
+            <rect width="8" height="5" fill="#8e979c" />
+            <path d="M1 3.5l2.4-2M5 1.5l2.4 2" stroke="#b4bcc0" stroke-width="1.1" stroke-linecap="round" />
+          </pattern>
+        </defs>
+
+        <g set:html={gevels} />
+        {ZUILEN.map((z) => <g set:html={zuil(z.c, z.soort, z.band, z.plaatje)} />)}
+        <!-- het plaatje op de restafvalzuil -->
+        <svg x="287" y="268" width="46" height="66.7" viewBox="0 0 320 464"><Plaatje id="klein" titel="" schaduw={false} /></svg>
+
+        <!-- detail A -->
+        <g class="detail" fill="none" stroke="#142019" stroke-width="1.25">
+          <circle class="lijn" cx="310" cy="301" r="42" pathLength="1" />
+          <path class="lijn" d="M349 286 L398 252" pathLength="1" />
+        </g>
+        <text x="350" y="266" font-family="var(--font-display)" font-weight="800" font-size="17" fill="#142019">A</text>
+
+        <svg x="404" y="0" width="232" height="336.4" viewBox="0 0 320 464"><Plaatje id="groot" /></svg>
+        <text x="636" y="360" text-anchor="end" class="anno" font-family="var(--font-body)" font-size="13.5" fill="#5a6a61"><tspan font-weight="700" fill="#142019">Detail A.</tspan> Het meldplaatje (voorbeeld).</text>
+      </svg>
+    </div>
+
+    <!-- onder het maaiveld -->
+    <div class="put">
+      <svg class="block h-auto w-full" viewBox="0 0 640 236" aria-hidden="true">
+        <defs>
+          <pattern id="beton" width="14" height="14" patternUnits="userSpaceOnUse">
+            <rect width="14" height="14" fill="#7a8580" />
+            <circle cx="3" cy="4" r="1" fill="#a2aca7" /><circle cx="10" cy="10" r="0.8" fill="#a2aca7" />
+            <path d="M9 2.5l2 3h-4z" fill="#5f6a65" /><path d="M2.5 10l1.6 2.6h-3.2z" fill="#5f6a65" />
+          </pattern>
+          <linearGradient id="bakwand" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#8f989d" /><stop offset="0.5" stop-color="#cdd3d6" /><stop offset="1" stop-color="#8f989d" />
+          </linearGradient>
+        </defs>
+        {ZUILEN.map((z) => <g set:html={put(z.c, z.soort)} />)}
+        <g class="anno" font-family="var(--font-body)" font-size="13.5" fill="#d5ddd8">
+          <path d="M368 2.5L382 22H430M354 104H430" fill="none" stroke="#9ea9a3" stroke-width="1" />
+          <text x="438" y="26.5">veiligheidsplatform</text>
+          <text x="438" y="108.5">ondergrondse container</text>
+        </g>
+      </svg>
+    </div>
+
+    <p class="onderschrift text-xs text-op-donker">
+      Doorsnede van een rij ondergrondse containers: papier, PMD en restafval. Het meldplaatje zit op de inworpzuil.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Eén raster voor de hele hero, zodat de tekst op mobiel onder het maaiveld kan
+     staan en op desktop ernaast, terwijl zuil en put altijd precies op elkaar aansluiten. */
+  .raster {
+    display: grid;
+    grid-template-columns: [vol-start] 1rem [a-start b-start] minmax(0, 1fr) [a-end b-end] 1rem [vol-end];
+    grid-template-rows: auto auto auto 1fr;
+  }
+  .kop { grid-column: a; grid-row: 1; }
+  .beeld { grid-column: b; grid-row: 2; margin-top: 1.5rem; }
+  .put { grid-column: b; grid-row: 3; }
+  .tekst { grid-column: a; grid-row: 4; padding: 0.25rem 0 2.5rem; }
+  .onderschrift { display: none; }
+  .grondvlak {
+    grid-column: vol; grid-row: 3 / 5;
+    background-color: var(--color-grond);
+    /* arcering zoals grond in een technische doorsnede */
+    background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.045) 0 1px, transparent 1px 11px);
+    border-top: 2px solid #7f8a85;
+  }
+  .put { margin-top: 0; }
+  /* Op mobiel staat de uitleg onder het maaiveld, dus licht op donker. */
+  .tekst p { color: var(--color-op-donker-sterk); }
+  .bewoner { color: var(--color-wit); text-decoration-color: var(--color-fris); }
+  .bewoner:hover { text-decoration-color: var(--color-fris-licht); }
+
+  @media (min-width: 640px) {
+    .raster { grid-template-columns: [vol-start] 2rem [a-start b-start] minmax(0, 1fr) [a-end b-end] 2rem [vol-end]; }
+  }
+  @media (min-width: 1024px) {
+    .raster {
+      grid-template-columns: [vol-start] minmax(4rem, 1fr) [a-start] minmax(0, 36rem) [a-end] 3rem [b-start] minmax(0, 46rem) [b-end] minmax(4rem, 1fr) [vol-end];
+      grid-template-rows: auto auto 1fr;
+    }
+    .kop { grid-column: a; grid-row: 1; align-self: end; }
+    .tekst { grid-column: a; grid-row: 2; padding: 1.5rem 0 3rem; }
+    .beeld { grid-column: b; grid-row: 1 / 3; align-self: end; margin-top: 0; }
+    .put { grid-column: b; grid-row: 3; }
+    .grondvlak { grid-row: 3; }
+    .onderschrift { display: block; grid-column: a; grid-row: 3; padding-top: 2rem; max-width: 30rem; }
+    .tekst p { color: var(--color-tekst); }
+    .bewoner { color: var(--color-inkt); text-decoration-color: var(--color-alu); }
+    .bewoner:hover { text-decoration-color: var(--color-bos); }
+  }
+  @media (max-width: 639px) {
+    .anno { display: none; }
+  }
+  .knop:hover .pijl { transform: translateX(3px); }
+
+  /* De enige beweging: detail A wordt bij het laden even ingetekend. */
+  .detail .lijn {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: teken 0.9s 0.35s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+  }
+  .detail path.lijn { animation-delay: 0.95s; animation-duration: 0.6s; }
+  @keyframes teken { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .detail .lijn { stroke-dashoffset: 0; }
+  }
+</style>

@@ -1,0 +1,12 @@
+---
+// Werkpagina: het meldplaatje groot en los, om te beoordelen en mee te sturen naar
+// een graveerder. Staat niet in de sitemap en wordt niet geindexeerd.
+import Basis from '../layouts/Basis.astro';
+import Plaatje from '../components/Plaatje.astro';
+---
+<Basis titel="Meldplaatje | afvalmeldpunt" omschrijving="Voorbeeld van het aluminium meldplaatje met QR-code." noindex>
+  <main id="hoofdinhoud" class="grid min-h-svh place-items-center bg-papier p-6 sm:p-12">
+    <h1 class="sr-only">Voorbeeld van het meldplaatje</h1>
+    <Plaatje id="los" class="plaatje-los h-auto w-full max-w-[1200px]" />
+  </main>
+</Basis>

@@ -1,0 +1,121 @@
+---
+// Nagebouwd dashboard met verzonnen VOORBEELDgegevens (geen echte locaties of aantallen).
+// Klik op een container om zijn meldingen te zien; zonder script toont hij de eerste.
+import Logo from './Logo.astro';
+import { CATEGORIEEN, icoonSvg } from '../lib/meldingen.mjs';
+
+const cat: Record<string, { naam: string; icoon: string }> = Object.fromEntries(CATEGORIEEN.map((c) => [c.id, c]));
+// Melding van de vulgraadsensor (optie): eigen icoon, en "Sensor" als bron in plaats van "Bewoner".
+cat.sensor = { naam: 'Bijna vol', icoon: '<path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l4.5-5"/><circle cx="12" cy="16" r="1.3"/>' };
+const containers = [
+  { nr: '0123', soort: 'Restafval', kleur: '#98a1a6', plek: 'Voorbeeldstraat 12', meldingen: [
+    { c: 'vol', wanneer: 'vandaag 08:42', foto: true },
+    { c: 'bijgeplaatst', wanneer: 'vandaag 07:15', foto: true },
+    { c: 'sensor', wanneer: 'vandaag 06:30', foto: false },
+  ] },
+  { nr: '0124', soort: 'Papier', kleur: '#2f6496', plek: 'Voorbeeldstraat 12', meldingen: [
+    { c: 'vol', wanneer: 'gisteren 18:20', foto: false },
+  ] },
+  { nr: '0187', soort: 'PMD', kleur: '#e07b26', plek: 'Voorbeeldplein 3', meldingen: [
+    { c: 'defect', wanneer: 'gisteren 11:05', foto: true },
+  ] },
+  { nr: '0210', soort: 'Restafval', kleur: '#98a1a6', plek: 'Voorbeeldlaan 40', meldingen: [] },
+];
+---
+<section id="dashboard" class="relative overflow-hidden bg-grond py-20 text-op-donker-sterk sm:py-28" aria-labelledby="dash-kop">
+  <div class="mx-auto max-w-[90rem] px-4 sm:px-8 lg:px-16">
+    <div class="grid gap-6 lg:grid-cols-12 lg:items-end">
+      <h2 id="dash-kop" class="max-w-[14ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] text-wit lg:col-span-6">Alle meldingen, per container</h2>
+      <p class="max-w-[30rem] text-lg lg:col-span-5 lg:col-start-8">De beheerder ziet per container wat er gemeld is, met de foto erbij als die is meegestuurd.</p>
+    </div>
+
+    <div class="dash mt-12 overflow-hidden rounded-md bg-papier text-tekst sm:mt-16" role="group" aria-label="Nagebouwd dashboard met voorbeeldgegevens">
+      <div class="flex items-center justify-between gap-4 border-b border-lijn bg-wit px-4 py-3 sm:px-6">
+        <div class="flex items-center gap-3">
+          <Logo class="h-5 w-auto sm:h-6" />
+          <span class="hidden text-sm font-semibold text-tekst-2 sm:inline">Dashboard</span>
+        </div>
+        <span class="rounded-sm border border-tekst-2 px-2 py-0.5 text-xs font-bold text-tekst-2">Voorbeeldgegevens</span>
+      </div>
+
+      <div class="grid md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+        <ul class="border-b border-lijn md:border-r md:border-b-0" aria-label="Containers">
+          {containers.map((k, i) => (
+            <li>
+              <button type="button" class="container-rij" data-container={k.nr} aria-pressed={i === 0 ? 'true' : 'false'}>
+                <span class="h-9 w-1.5 shrink-0 rounded-full" style={`background:${k.kleur}`}></span>
+                <span class="min-w-0 flex-1 text-left">
+                  <span class="block font-bold text-inkt">Container {k.nr}</span>
+                  <span class="block truncate text-sm text-tekst-2">{k.soort}, {k.plek}</span>
+                </span>
+                <span class={`teller ${k.meldingen.length ? 'actief' : ''}`}>{k.meldingen.length}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div class="min-h-[19rem] p-4 sm:p-6">
+          {containers.map((k, i) => (
+            <div data-paneel={k.nr} hidden={i !== 0}>
+              <p class="font-display text-xl font-extrabold tracking-[-0.02em] text-inkt">Container {k.nr}</p>
+              <p class="text-sm text-tekst-2">{k.soort}, {k.plek}</p>
+              {k.meldingen.length === 0 ? (
+                <p class="mt-8 text-tekst-2">Geen meldingen.</p>
+              ) : (
+                <ul class="mt-5 grid gap-3">
+                  {k.meldingen.map((m) => (
+                    <li class="flex items-center gap-4 rounded-md border border-lijn bg-wit p-3 sm:p-4">
+                      <span class="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-papier-2 text-bos" set:html={icoonSvg(cat[m.c].icoon)} />
+                      <span class="min-w-0 flex-1">
+                        <span class="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-inkt">{cat[m.c].naam}<span class={`bron ${m.c === 'sensor' ? 'sensor' : ''}`}>{m.c === 'sensor' ? 'Sensor' : 'Bewoner'}</span></span>
+                        <span class="block text-sm text-tekst-2">Ontvangen {m.wanneer}</span>
+                      </span>
+                      {m.foto ? (
+                        <span class="foto" aria-label="Met foto" role="img">
+                          <svg viewBox="0 0 60 44" class="h-full w-full" aria-hidden="true"><rect width="60" height="44" fill="#cfd8d3" /><rect y="32" width="60" height="12" fill="#9aa59f" /><rect x="18" y="8" width="14" height="26" rx="2" fill="#3a4440" /><rect x="20" y="12" width="10" height="6" rx="1" fill="#c9d0d4" /><path d="M41 35c-4 0-6-2-6-5s2-5 6-7c4 2 6 4 6 7s-2 5-6 5z" fill="#2f3733" /></svg>
+                        </span>
+                      ) : m.c === 'sensor' ? null : (
+                        <span class="text-xs text-tekst-2">geen foto</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    <p class="mt-4 text-sm text-op-donker">Nagebouwde weergave met voorbeeldgegevens. Klik op een container. Het echte dashboard kan er anders uitzien.</p>
+  </div>
+</section>
+
+<style>
+  .container-rij {
+    display: flex; align-items: center; gap: 0.9rem; width: 100%;
+    padding: 0.9rem 1rem; border-bottom: 1px solid var(--color-lijn);
+    cursor: pointer; transition: background-color 0.15s;
+  }
+  @media (min-width: 640px) { .container-rij { padding: 1rem 1.5rem; } }
+  .container-rij:hover { background: var(--color-papier-2); }
+  .container-rij[aria-pressed="true"] { background: var(--color-wit); box-shadow: inset 3px 0 0 var(--color-bos); }
+  .teller {
+    min-width: 1.75rem; height: 1.75rem; display: grid; place-items: center; border-radius: 999px;
+    font-size: 0.8125rem; font-weight: 700; color: var(--color-tekst-2); background: var(--color-papier-2);
+  }
+  .teller.actief { background: var(--color-bos); color: var(--color-wit); }
+  .bron { font-size: 0.6875rem; font-weight: 700; padding: 0.05rem 0.4rem; border-radius: 3px; border: 1px solid #14201940; color: var(--color-tekst-2); }
+  .bron.sensor { border-color: var(--color-bos); background: var(--color-bos); color: var(--color-wit); }
+  .foto { display: block; width: 3.75rem; height: 2.75rem; border-radius: 4px; overflow: hidden; flex: none; }
+</style>
+
+<script>
+  const dash = document.querySelector('.dash');
+  dash?.addEventListener('click', (e) => {
+    const knop = (e.target as HTMLElement).closest<HTMLElement>('[data-container]');
+    if (!knop) return;
+    const nr = knop.dataset.container;
+    dash.querySelectorAll<HTMLElement>('[data-container]').forEach((k) => k.setAttribute('aria-pressed', String(k === knop)));
+    dash.querySelectorAll<HTMLElement>('[data-paneel]').forEach((p) => (p.hidden = p.dataset.paneel !== nr));
+  });
+</script>

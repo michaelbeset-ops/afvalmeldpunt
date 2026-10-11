@@ -1,0 +1,47 @@
+---
+import Basis from '../layouts/Basis.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<Basis titel="Privacyverklaring | afvalmeldpunt" omschrijving="Hoe afvalmeldpunt.nl omgaat met de gegevens uit het demoformulier. Deze website plaatst geen cookies.">
+  <Header />
+  <main id="hoofdinhoud" class="mx-auto max-w-[90rem] px-4 pt-10 pb-24 sm:px-8 sm:pt-16 lg:px-16">
+    <article class="privacy max-w-[42rem]">
+      <h1 class="text-[clamp(2rem,1.4rem+3vw,3.75rem)]">Privacyverklaring</h1>
+      <p class="mt-4 text-sm text-tekst-2">Versie oktober 2026</p>
+
+      <h2>Wie is verantwoordelijk</h2>
+      <p>[[AANLEVEREN: bedrijfsnaam]] (KvK [[AANLEVEREN: KvK-nummer]]) is verantwoordelijk voor deze website, afvalmeldpunt.nl. Contact: [[AANLEVEREN: e-mailadres voor demo-aanvragen]].</p>
+
+      <h2>Welke gegevens we verwerken</h2>
+      <p>Alleen wat u zelf invult in het formulier voor een demo-aanvraag: uw naam, organisatie, e-mailadres, en als u die invult ook uw telefoonnummer en bericht.</p>
+
+      <h2>Waarvoor</h2>
+      <p>We gebruiken deze gegevens alleen om contact met u op te nemen over uw aanvraag. We verkopen ze niet en gebruiken ze niet voor reclame.</p>
+
+      <h2>Hoe het formulier werkt</h2>
+      <p>Het formulier wordt verstuurd via Web3Forms. Die dienst zet uw aanvraag om in een e-mail aan ons en verwerkt uw gegevens daarvoor.</p>
+
+      <h2>Hoe lang we gegevens bewaren</h2>
+      <p>[[AANLEVEREN: bewaartermijn van demo-aanvragen]]</p>
+
+      <h2>Cookies en meten</h2>
+      <p>Deze website plaatst geen cookies en gebruikt geen statistieken of trackers. De lettertypes staan op onze eigen server, er gaan geen verzoeken naar Google.</p>
+
+      <h2>Hosting</h2>
+      <p>De website wordt gehost op GitHub Pages. GitHub kan voor de beveiliging technische gegevens verwerken, zoals IP-adressen.</p>
+
+      <h2>Meldingen via de meldpagina</h2>
+      <p>Deze verklaring gaat over de website afvalmeldpunt.nl. Voor meldingen die bewoners via de QR-code doen: [[AANLEVEREN: privacyverklaring van het meldsysteem, of een link ernaar]].</p>
+
+      <h2>Uw rechten</h2>
+      <p>U mag vragen welke gegevens we van u hebben, en ze laten verbeteren of verwijderen. Mail daarvoor naar [[AANLEVEREN: e-mailadres voor demo-aanvragen]]. Bent u het niet eens met hoe we met uw gegevens omgaan, dan kunt u een klacht indienen bij de Autoriteit Persoonsgegevens.</p>
+    </article>
+  </main>
+  <Footer />
+</Basis>
+
+<style>
+  .privacy h2 { margin-top: 2.75rem; font-size: 1.5rem; }
+  .privacy p { margin-top: 0.75rem; }
+</style>

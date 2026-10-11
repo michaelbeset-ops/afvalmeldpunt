@@ -1,0 +1,30 @@
+{
+  "name": "afvalmeldpunt",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev --port 4510",
+    "build": "astro build",
+    "preview": "astro preview --port 4510",
+    "qr": "node tools/maak-qr.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/public-sans": "^5.3.0",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.8",
+    "qrcode": "^1.5.4",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@fontsource/schibsted-grotesk": "^5.3.0",
+    "@zxing/library": "^0.23.0",
+    "jsqr": "^1.4.0",
+    "opentype.js": "^2.0.0",
+    "playwright": "^1.63.0",
+    "sharp": "^0.35.5"
+  }
+}

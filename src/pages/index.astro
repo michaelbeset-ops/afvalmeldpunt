@@ -1,0 +1,30 @@
+---
+import Basis from '../layouts/Basis.astro';
+import Hero from '../components/Hero.astro';
+import HoeHetWerkt from '../components/HoeHetWerkt.astro';
+import Meldflow from '../components/Meldflow.astro';
+import Dashboard from '../components/Dashboard.astro';
+import Sensor from '../components/Sensor.astro';
+import VoorWie from '../components/VoorWie.astro';
+import PlaatjeSectie from '../components/PlaatjeSectie.astro';
+import Bewoners from '../components/Bewoners.astro';
+import Demo from '../components/Demo.astro';
+import Footer from '../components/Footer.astro';
+---
+<Basis
+  titel="afvalmeldpunt | Melden met een QR-code op ondergrondse containers"
+  omschrijving="Een aluminium plaatje met QR-code op elke ondergrondse container. Bewoners melden zonder app of account, u ziet de meldingen per container in een dashboard. Optioneel met vulgraadsensor."
+>
+  <main id="hoofdinhoud">
+    <Hero />
+    <HoeHetWerkt />
+    <Meldflow />
+    <Sensor />
+    <Dashboard />
+    <VoorWie />
+    <PlaatjeSectie />
+    <Bewoners />
+    <Demo />
+  </main>
+  <Footer />
+</Basis>

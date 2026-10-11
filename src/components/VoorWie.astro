@@ -1,0 +1,22 @@
+---
+// Drie doelgroepen als rijen met een lijn ertussen, zoals een inhoudsopgave.
+// Alleen wat logisch uit de functies volgt: geen cijfers of beloftes.
+const groepen = [
+  { naam: 'Gemeenten', tekst: 'Meldingen over ondergrondse containers komen per container binnen, met een foto als de bewoner die meestuurt.' },
+  { naam: 'Afvalinzamelaars', tekst: 'U ziet per container wat er gemeld is: vol, bijgeplaatst afval, kapot of iets anders. Daar kunt u het werk op afstemmen. Met de vulgraadsensor (optie) ziet u ook welke container bijna vol is, zodat u kunt legen voordat er afval naast komt te staan.' },
+  { naam: 'Woningcorporaties', tekst: 'Bewoners melden bij de container zelf, zonder app of account. U ziet wat er speelt bij de containers rond uw woningen.' },
+];
+---
+<section id="voor-wie" class="bg-papier py-20 sm:py-28" aria-labelledby="wie-kop">
+  <div class="mx-auto max-w-[90rem] px-4 sm:px-8 lg:px-16">
+    <h2 id="wie-kop" class="text-[clamp(2rem,1.4rem+2.4vw,3.25rem)]">Voor wie</h2>
+    <ul class="mt-10 border-t-2 border-inkt sm:mt-14">
+      {groepen.map((g) => (
+        <li class="grid gap-3 border-b border-inkt/20 py-8 sm:py-10 lg:grid-cols-12 lg:gap-8">
+          <h3 class="text-[clamp(1.625rem,1.2rem+1.6vw,2.5rem)] lg:col-span-5">{g.naam}</h3>
+          <p class="max-w-[36rem] text-lg lg:col-span-6 lg:col-start-7 lg:pt-1.5">{g.tekst}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

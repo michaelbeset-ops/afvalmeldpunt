@@ -1,0 +1,11 @@
+---
+// Logo als inline SVG: woordmerk is al naar paden omgezet (tools/maak-logo.mjs).
+import { merkPaden } from '../lib/merk.mjs';
+import woordmerk from '../lib/woordmerk.json';
+interface Props { class?: string; merkKleur?: string; oogKleur?: string; tekstKleur?: string }
+const { class: klasse = '', merkKleur = "var(--color-bos)", oogKleur = "var(--color-fris)", tekstKleur = "var(--color-inkt)" } = Astro.props;
+---
+<svg class={klasse} viewBox={`0 0 ${woordmerk.breedte} ${woordmerk.hoogte}`} role="img" aria-label="afvalmeldpunt" xmlns="http://www.w3.org/2000/svg">
+  <g set:html={merkPaden(merkKleur, oogKleur)} />
+  <path fill={tekstKleur} d={woordmerk.d} />
+</svg>

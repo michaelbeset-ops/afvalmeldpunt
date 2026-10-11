@@ -1,0 +1,85 @@
+---
+// Vulgraadsensor (optie), getekend in dezelfde doorsnede-stijl als de hero: een kastje
+// bovenin de bak, een meetbundel naar het afval, een "bijna vol"-lijn en de melding die
+// eruit volgt. Bewust zonder technische specificaties: die zijn nog niet aangeleverd.
+import { zuil, put } from '../lib/tekening';
+import Plaatje from './Plaatje.astro';
+
+const c = 120;   // midden van zuil en put
+const g = 210;   // maaiveld
+const p = 'sn-'; // eigen verloop-id's naast die van de hero
+---
+<section id="sensor" class="bg-papier-2 py-20 sm:py-28" aria-labelledby="sensor-kop">
+  <div class="mx-auto grid max-w-[90rem] items-center gap-12 px-4 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-16">
+    <div class="lg:col-span-5">
+      <h2 id="sensor-kop" class="max-w-[13ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)]">Melding voordat hij vol is</h2>
+      <p class="mt-6 max-w-[30rem] text-lg">Als optie leveren we een vulgraadsensor in de container. Die geeft een melding als de container bijna vol is.</p>
+      <p class="mt-4 max-w-[30rem] text-lg">Dan kan hij geleegd worden voordat er afval naast komt te staan. Zo helpt de sensor bijplaatsing voorkomen.</p>
+      <p class="mt-8 max-w-[30rem] border-l-[3px] border-fris pl-5 text-base">In het voorbeelddashboard hieronder staat zo'n sensormelding naast de meldingen van bewoners.</p>
+      <p class="mt-6 text-sm text-tekst-2">Technische gegevens: [[AANLEVEREN: technische gegevens vulgraadsensor]]</p>
+    </div>
+
+    <div class="lg:col-span-6 lg:col-start-7">
+      <svg class="mx-auto block h-auto w-full max-w-[32rem]" viewBox="0 0 380 456" role="img" aria-labelledby="sensor-tekening">
+        <title id="sensor-tekening">Doorsnede van een ondergrondse container met een vulgraadsensor bovenin de bak. De sensor meet tot het afval en geeft een melding als de container bijna vol is.</title>
+        <defs>
+          <linearGradient id={`${p}lijf`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#2c3431" /><stop offset="0.28" stop-color="#4b5551" /><stop offset="0.7" stop-color="#3a4340" /><stop offset="1" stop-color="#262d2a" />
+          </linearGradient>
+          <linearGradient id={`${p}trommel`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#7f898e" /><stop offset="0.42" stop-color="#e9edef" /><stop offset="1" stop-color="#848e93" />
+          </linearGradient>
+          <pattern id={`${p}traanplaat`} width="8" height="5" patternUnits="userSpaceOnUse">
+            <rect width="8" height="5" fill="#8e979c" /><path d="M1 3.5l2.4-2M5 1.5l2.4 2" stroke="#b4bcc0" stroke-width="1.1" stroke-linecap="round" />
+          </pattern>
+          <pattern id={`${p}beton`} width="14" height="14" patternUnits="userSpaceOnUse">
+            <rect width="14" height="14" fill="#7a8580" /><circle cx="3" cy="4" r="1" fill="#a2aca7" /><circle cx="10" cy="10" r="0.8" fill="#a2aca7" />
+            <path d="M9 2.5l2 3h-4z" fill="#5f6a65" /><path d="M2.5 10l1.6 2.6h-3.2z" fill="#5f6a65" />
+          </pattern>
+          <linearGradient id={`${p}bakwand`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#8f989d" /><stop offset="0.5" stop-color="#cdd3d6" /><stop offset="1" stop-color="#8f989d" />
+          </linearGradient>
+          <pattern id={`${p}arcering`} width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="11" height="11" fill="#1b2822" /><path d="M0 0V11" stroke="#ffffff" stroke-opacity="0.05" />
+          </pattern>
+        </defs>
+
+        <!-- grond -->
+        <rect x="0" y={g} width="380" height={456 - g} fill={`url(#${p}arcering)`} />
+        <rect x="0" y={g} width="380" height="2" fill="#7f8a85" />
+
+        <g transform={`translate(0 ${g - 380})`} set:html={zuil(c, 'rest', '#98a1a6', true, p)} />
+        <svg x={c - 23} y={268 - 170} width="46" height="66.7" viewBox="0 0 320 464"><Plaatje id="sensorzuil" titel="" schaduw={false} /></svg>
+        <g transform={`translate(0 ${g})`}>
+          <g set:html={put(c, 'rest', p, true)} />
+
+          <!-- meetbundel, van de sensor naar het afval -->
+          <path d={`M${c + 25} 27L${c - 6} 56H${c + 38}V27Z`} fill="#8fd1a8" fill-opacity="0.22" />
+          <path d={`M${c + 25} 27L${c - 6} 56M${c + 25} 27L${c + 38} 52`} stroke="#8fd1a8" stroke-width="1" stroke-dasharray="3 3" fill="none" />
+          <!-- de sensor zelf -->
+          <rect x={c + 14} y="17" width="22" height="10" rx="2.5" fill="#1c6a43" stroke="#0e3b25" stroke-width="1" />
+          <circle cx={c + 25} cy="25" r="2.4" fill="#8fd1a8" />
+
+          <!-- bijna-vol-lijn met markering -->
+          <path d={`M${c - 40} 60H${c + 40}`} stroke="#e8f0eb" stroke-width="1.6" stroke-dasharray="6 4" />
+          <path d={`M${c + 40} 60H${c + 70}`} stroke="#9ea9a3" stroke-width="1" />
+          <text x={c + 76} y="64" font-family="var(--font-body)" font-size="13" font-weight="700" fill="#d5ddd8">bijna vol</text>
+
+          <!-- de melding gaat de grond uit, naar het dashboard -->
+          <path d={`M${c + 36} 22H${c + 110}V-64`} stroke="#3f9f64" stroke-width="2" fill="none" stroke-dasharray="5 4" />
+          <text x={c + 76} y="40" font-family="var(--font-body)" font-size="13" fill="#d5ddd8">vulgraadsensor</text>
+        </g>
+
+        <!-- de melding, zoals hij in het dashboard verschijnt -->
+        <g transform="translate(184 92)">
+          <rect width="192" height="54" rx="6" fill="#ffffff" stroke="#14201933" />
+          <circle cx="24" cy="27" r="14" fill="#1c6a43" />
+          <path d="M16 31a8 8 0 0 1 16 0M24 31l4.5-5" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" />
+          <circle cx="24" cy="31" r="1.7" fill="#ffffff" />
+          <text x="46" y="24" font-family="var(--font-display)" font-size="14" font-weight="800" fill="#142019">Melding: bijna vol</text>
+          <text x="46" y="41" font-family="var(--font-body)" font-size="11.5" fill="#5a6a61">Container 0123 (voorbeeld)</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>

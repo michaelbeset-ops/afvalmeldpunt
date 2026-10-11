@@ -1,0 +1,24 @@
+---
+import Logo from './Logo.astro';
+---
+<footer class="bg-inkt py-14 text-op-donker sm:py-16">
+  <div class="mx-auto grid max-w-[90rem] gap-10 px-4 sm:px-8 lg:grid-cols-12 lg:px-16">
+    <div class="lg:col-span-5">
+      <Logo class="h-8 w-auto" merkKleur="#ffffff" oogKleur="#8fd1a8" tekstKleur="#ffffff" />
+      <p class="mt-4 max-w-[22rem]">QR-meldsysteem voor ondergrondse afvalcontainers.</p>
+    </div>
+    <nav aria-label="Voettekst" class="lg:col-span-3">
+      <ul class="grid gap-2.5">
+        <li><a class="hover:text-wit hover:underline" href="/#hoe-het-werkt">Hoe het werkt</a></li>
+        <li><a class="hover:text-wit hover:underline" href="/#melden">Voor bewoners</a></li>
+        <li><a class="hover:text-wit hover:underline" href="/#demo">Demo aanvragen</a></li>
+        <li><a class="hover:text-wit hover:underline" href="/privacy">Privacyverklaring</a></li>
+      </ul>
+    </nav>
+    <div class="lg:col-span-4">
+      <p class="font-semibold text-op-donker-sterk">Contact</p>
+      <p class="mt-2.5">[[AANLEVEREN: e-mailadres voor demo-aanvragen]]</p>
+    </div>
+    <p class="border-t border-wit/15 pt-6 text-sm lg:col-span-12">&copy; 2026 [[AANLEVEREN: bedrijfsnaam]], KvK [[AANLEVEREN: KvK-nummer]]</p>
+  </div>
+</footer>

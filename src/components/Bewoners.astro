@@ -1,0 +1,30 @@
+---
+import { CATEGORIEEN, icoonSvg } from '../lib/meldingen.mjs';
+import Plaatje from './Plaatje.astro';
+---
+<section id="melden" class="bg-bos py-20 text-wit sm:py-28" aria-labelledby="melden-kop">
+  <div class="mx-auto grid max-w-[90rem] gap-12 px-4 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-16">
+    <div class="lg:col-span-5">
+      <h2 id="melden-kop" class="text-[clamp(2.5rem,1.6rem+3.6vw,4.5rem)] text-wit">Iets melden?</h2>
+      <p class="mt-5 max-w-[24rem] text-lg text-op-bos">Voor bewoners die bij een ondergrondse container staan.</p>
+      <figure class="mt-10 flex items-end gap-5">
+        <Plaatje id="bewoner" class="h-auto w-36 shrink-0 sm:w-44" titel="Het meldplaatje op de container" />
+        <figcaption class="max-w-[12rem] pb-3 text-sm text-op-bos">Op dit plaatje staat de code. Het nummer is een voorbeeld.</figcaption>
+      </figure>
+    </div>
+    <div class="lg:col-span-6 lg:col-start-7">
+      <p class="text-xl leading-relaxed text-wit">Scan de QR-code op het plaatje van de container met de camera van je telefoon. Je komt dan op de meldpagina van precies die container.</p>
+      <p class="mt-5 text-lg text-op-bos">Kies wat er aan de hand is, voeg als je wilt een foto toe en verstuur. Je hebt geen app en geen account nodig.</p>
+      <h3 class="mt-12 text-xl text-wit">Waar kun je over melden?</h3>
+      <ul class="mt-5 grid gap-3 sm:grid-cols-2">
+        {CATEGORIEEN.map((c) => (
+          <li class="flex items-center gap-3 border-t border-wit/25 pt-3 font-semibold">
+            <span class="text-fris-licht" set:html={icoonSvg(c.icoon, 'h-6 w-6')} />
+            {c.naam}
+          </li>
+        ))}
+      </ul>
+      <p class="mt-10 text-base text-op-bos">Zit er geen plaatje op de container? Neem dan contact op met je gemeente.</p>
+    </div>
+  </div>
+</section>

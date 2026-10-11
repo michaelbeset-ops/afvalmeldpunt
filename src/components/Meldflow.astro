@@ -1,0 +1,196 @@
+---
+// De meldpagina zoals een bewoner hem ziet, nagebouwd en klikbaar. Er wordt niets
+// verstuurd: het script wisselt alleen tussen de schermen.
+import Logo from './Logo.astro';
+import { CATEGORIEEN, icoonSvg } from '../lib/meldingen.mjs';
+
+const stappen = ['Container herkend', 'Kiezen wat er aan de hand is', 'Foto toevoegen, als je wilt', 'Versturen'];
+---
+<section id="meldflow" class="bg-papier py-20 sm:py-28" aria-labelledby="flow-kop">
+  <div class="mx-auto grid max-w-[90rem] items-center gap-14 px-4 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-16">
+
+    <div class="order-2 flex justify-center lg:order-1 lg:col-span-5 lg:justify-start">
+      <div class="telefoon" data-scherm="1" role="group" aria-label="Nagebouwde meldpagina, klikbaar voorbeeld">
+        <div class="scherm" aria-live="polite">
+          <div class="balk">
+            <Logo class="h-5 w-auto" />
+            <span class="vb">voorbeeld</span>
+          </div>
+
+          <!-- 1: container herkend, kies een melding -->
+          <div class="stap" data-stap="1">
+            <p class="text-[0.8125rem] font-semibold text-tekst-2">Container 0123</p>
+            <p class="mt-1 font-display text-[1.375rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Wat is er aan de hand?</p>
+            <div class="mt-4 grid gap-2.5">
+              {CATEGORIEEN.map((c) => (
+                <button type="button" class="keuze" data-keuze={c.naam}>
+                  <span class="ico" set:html={icoonSvg(c.icoon)} />
+                  <span>{c.naam}</span>
+                </button>
+              ))}
+            </div>
+            <p class="mt-6 text-center text-[0.8125rem] text-tekst-2">Geen app of account nodig.</p>
+          </div>
+
+          <!-- 2: foto -->
+          <div class="stap" data-stap="2" hidden>
+            <button type="button" class="terug" data-naar="1">Terug</button>
+            <p class="mt-3 font-display text-[1.375rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Foto toevoegen</p>
+            <p class="mt-1 text-sm text-tekst-2">Mag, hoeft niet.</p>
+            <button type="button" class="fotovak mt-4" data-foto>
+              <span class="leeg">
+                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg>
+                Foto maken of kiezen
+              </span>
+              <span class="vol" aria-hidden="true">
+                <svg viewBox="0 0 120 80" class="h-full w-full"><rect width="120" height="80" fill="#cfd8d3" /><rect y="58" width="120" height="22" fill="#9aa59f" /><rect x="40" y="18" width="26" height="44" rx="4" fill="#3a4440" /><rect x="44" y="24" width="16" height="10" rx="2" fill="#c9d0d4" /><rect x="40" y="52" width="26" height="6" fill="#98a1a6" /><path d="M78 62c-6 0-9-3-9-8s4-9 9-11c5 2 9 6 9 11s-3 8-9 8z" fill="#2f3733" /><path d="M93 63c-5 0-7-2-7-6s3-7 7-8c4 1 7 4 7 8s-2 6-7 6z" fill="#59625e" /></svg>
+              </span>
+            </button>
+            <p class="fotostatus mt-2 text-[0.8125rem] text-tekst-2" data-fotostatus>Nog geen foto.</p>
+            <button type="button" class="hoofdknop mt-4" data-naar="3">Verder</button>
+          </div>
+
+          <!-- 3: controleren en versturen -->
+          <div class="stap" data-stap="3" hidden>
+            <button type="button" class="terug" data-naar="2">Terug</button>
+            <p class="mt-3 font-display text-[1.375rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Klopt dit?</p>
+            <dl class="mt-4 grid gap-3 text-sm">
+              <div class="rij"><dt>Container</dt><dd>0123</dd></div>
+              <div class="rij"><dt>Melding</dt><dd data-samen-keuze>-</dd></div>
+              <div class="rij"><dt>Foto</dt><dd data-samen-foto>Nee</dd></div>
+            </dl>
+            <button type="button" class="hoofdknop mt-6" data-naar="4">Melding versturen</button>
+          </div>
+
+          <!-- 4: bevestiging -->
+          <div class="stap text-center" data-stap="4" hidden>
+            <div class="mx-auto mt-10 grid h-16 w-16 place-items-center rounded-full bg-bos text-wit">
+              <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+            </div>
+            <p class="mt-5 font-display text-[1.375rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Verstuurd, bedankt!</p>
+            <p class="mt-2 text-sm text-tekst">Je melding staat bij container 0123.</p>
+            <button type="button" class="tweedeknop mt-8" data-naar="1" data-opnieuw>Nieuwe melding</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-1 lg:order-2 lg:col-span-6 lg:col-start-7">
+      <h2 id="flow-kop" class="max-w-[14ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)]">Zo meldt een bewoner</h2>
+      <p class="mt-5 max-w-[30rem] text-lg">Tik zelf door de meldpagina. Dit is een nagebouwd voorbeeld, er wordt niets verstuurd.</p>
+      <ol class="stappenlijst mt-10 grid gap-4">
+        {stappen.map((s, i) => (
+          <li data-lijst={i === 0 ? '1' : i === 3 ? '3' : String(i)} class="flex items-baseline gap-4 text-lg">
+            <span class="nr font-display font-extrabold">{i + 1}</span>
+            <span>{s}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .telefoon {
+    width: min(19.5rem, 100%);
+    aspect-ratio: 9 / 17.5;
+    border-radius: 2.6rem;
+    padding: 0.7rem;
+    background: linear-gradient(145deg, #2c3833, #121a16 55%, #26302b);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 24px 48px -28px rgb(20 32 25 / 0.55);
+  }
+  .scherm {
+    height: 100%;
+    border-radius: 2rem;
+    background: var(--color-wit);
+    padding: 1rem 1.15rem 1.25rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .balk {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.35rem 0 0.9rem; margin-bottom: 1rem;
+    border-bottom: 1px solid var(--color-lijn);
+  }
+  .vb {
+    font-size: 0.6875rem; font-weight: 700; color: var(--color-tekst-2);
+    border: 1px solid var(--color-tekst-2); border-radius: 3px; padding: 0 0.3rem;
+  }
+  .stap { animation: in 0.28s ease-out; }
+  @keyframes in { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } }
+  .keuze {
+    display: flex; align-items: center; gap: 0.75rem; width: 100%;
+    text-align: left; font-weight: 600; font-size: 0.9375rem; color: var(--color-inkt);
+    padding: 0.8rem 0.85rem; border-radius: 6px;
+    border: 1.5px solid #14201933; background: var(--color-papier);
+    transition: border-color 0.15s, background-color 0.15s;
+    cursor: pointer;
+  }
+  .keuze:hover { border-color: var(--color-bos); background: #e8f1ec; }
+  .ico { color: var(--color-bos); flex: none; }
+  .terug { font-size: 0.8125rem; font-weight: 600; color: var(--color-bos); cursor: pointer; }
+  .terug::before { content: "\2039\00a0"; }
+  .fotovak {
+    display: block; width: 100%; aspect-ratio: 3 / 2; border-radius: 6px; overflow: hidden;
+    border: 1.5px dashed #1420195c; background: var(--color-papier); cursor: pointer;
+  }
+  .fotovak .leeg { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.875rem; font-weight: 600; color: var(--color-tekst); }
+  .fotovak .vol { display: none; height: 100%; }
+  .fotovak[data-heeft-foto] { border-style: solid; }
+  .fotovak[data-heeft-foto] .leeg { display: none; }
+  .fotovak[data-heeft-foto] .vol { display: block; }
+  .hoofdknop, .tweedeknop {
+    width: 100%; padding: 0.85rem; border-radius: 6px; font-weight: 700; cursor: pointer;
+    transition: background-color 0.15s;
+  }
+  .hoofdknop { background: var(--color-bos); color: var(--color-wit); }
+  .hoofdknop:hover { background: var(--color-bos-diep); }
+  .tweedeknop { border: 1.5px solid var(--color-inkt); color: var(--color-inkt); }
+  .rij { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--color-lijn); }
+  .rij dt { color: var(--color-tekst-2); }
+  .rij dd { font-weight: 700; color: var(--color-inkt); text-align: right; }
+  .stappenlijst li { color: var(--color-tekst-2); transition: color 0.2s; }
+  .stappenlijst .nr { display: inline-block; width: 1.25rem; color: var(--color-tekst-2); }
+  .stappenlijst li.actief { color: var(--color-inkt); font-weight: 600; }
+  .stappenlijst li.actief .nr { color: var(--color-bos); }
+</style>
+
+<script>
+  const tel = document.querySelector<HTMLElement>('.telefoon');
+  if (tel) {
+    let keuze = '';
+    let foto = false;
+    const lijst = document.querySelectorAll<HTMLElement>('.stappenlijst li');
+    const toon = (n: string) => {
+      tel.dataset.scherm = n;
+      tel.querySelectorAll<HTMLElement>('.stap').forEach((s) => (s.hidden = s.dataset.stap !== n));
+      // Stappenlijst naast de telefoon loopt mee: scherm 1 = herkend + kiezen.
+      const actief = n === '1' ? [0, 1] : n === '2' ? [2] : [3];
+      lijst.forEach((li, i) => li.classList.toggle('actief', actief.includes(i)));
+      const samenKeuze = tel.querySelector('[data-samen-keuze]');
+      const samenFoto = tel.querySelector('[data-samen-foto]');
+      if (samenKeuze) samenKeuze.textContent = keuze || '-';
+      if (samenFoto) samenFoto.textContent = foto ? 'Ja' : 'Nee';
+    };
+    tel.addEventListener('click', (e) => {
+      const el = (e.target as HTMLElement).closest<HTMLElement>('button');
+      if (!el) return;
+      if (el.dataset.keuze) { keuze = el.dataset.keuze; toon('2'); return; }
+      if (el.hasAttribute('data-foto')) {
+        foto = !foto;
+        el.toggleAttribute('data-heeft-foto', foto);
+        const st = tel.querySelector('[data-fotostatus]');
+        if (st) st.textContent = foto ? 'Foto toegevoegd. Tik nog eens om te verwijderen.' : 'Nog geen foto.';
+        return;
+      }
+      if (el.hasAttribute('data-opnieuw')) {
+        keuze = ''; foto = false;
+        tel.querySelector('[data-foto]')?.removeAttribute('data-heeft-foto');
+        const st = tel.querySelector('[data-fotostatus]');
+        if (st) st.textContent = 'Nog geen foto.';
+      }
+      if (el.dataset.naar) toon(el.dataset.naar);
+    });
+    toon('1');
+  }
+</script>

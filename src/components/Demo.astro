@@ -1,0 +1,67 @@
+---
+// Formulier via Web3Forms (zie stack-en-deploy.md): gewone HTML-post, met een klein
+// script dat het netjes op de pagina afhandelt. Honeypot "botcheck" tegen spam.
+const veld = 'w-full rounded-md border border-inkt/30 bg-wit px-3.5 py-3 text-base text-inkt transition-colors focus:border-bos focus:outline-none focus-visible:outline-3 focus-visible:outline-fris';
+---
+<section id="demo" class="bg-papier py-20 sm:py-28" aria-labelledby="demo-kop">
+  <div class="mx-auto grid max-w-[90rem] gap-12 px-4 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-16">
+    <div class="lg:col-span-5">
+      <h2 id="demo-kop" class="text-[clamp(2.5rem,1.6rem+3.6vw,4.5rem)]">Demo aanvragen</h2>
+      <p class="mt-5 max-w-[26rem] text-lg">Wilt u zien hoe het werkt voor uw containers? Laat uw gegevens achter, dan nemen we contact met u op.</p>
+    </div>
+
+    <form class="demoformulier grid gap-5 lg:col-span-6 lg:col-start-7" action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="[[AANLEVEREN: Web3Forms-key]]" />
+      <input type="hidden" name="subject" value="Demo-aanvraag via afvalmeldpunt.nl" />
+      <input type="hidden" name="from_name" value="afvalmeldpunt.nl" />
+      <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <label class="grid gap-1.5"><span class="font-semibold text-inkt">Naam</span><input class={veld} type="text" name="naam" autocomplete="name" required /></label>
+        <label class="grid gap-1.5"><span class="font-semibold text-inkt">Organisatie</span><input class={veld} type="text" name="organisatie" autocomplete="organization" required /></label>
+        <label class="grid gap-1.5"><span class="font-semibold text-inkt">E-mailadres</span><input class={veld} type="email" name="email" autocomplete="email" required /></label>
+        <label class="grid gap-1.5"><span class="font-semibold text-inkt">Telefoonnummer <span class="font-normal text-tekst-2">(optioneel)</span></span><input class={veld} type="tel" name="telefoon" autocomplete="tel" /></label>
+      </div>
+      <label class="grid gap-1.5"><span class="font-semibold text-inkt">Bericht <span class="font-normal text-tekst-2">(optioneel)</span></span><textarea class={veld} name="bericht" rows="4"></textarea></label>
+
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <button type="submit" class="knop inline-flex items-center gap-2.5 rounded-md bg-bos px-5 py-3.5 font-display text-base font-bold text-wit shadow-knop transition-colors duration-200 hover:bg-bos-diep disabled:opacity-60">
+          Demo aanvragen
+          <svg class="pijl h-4 w-4 transition-transform duration-200" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        </button>
+        <p class="max-w-[22rem] text-sm text-tekst-2">We gebruiken uw gegevens alleen om contact met u op te nemen over deze aanvraag. Zie de <a class="font-semibold text-bos underline underline-offset-2" href="/privacy">privacyverklaring</a>.</p>
+      </div>
+      <p class="melding hidden rounded-md px-4 py-3 font-semibold" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .knop:hover .pijl { transform: translateX(3px); }
+  .melding.goed { display: block; background: #e3f0e8; color: var(--color-bos-diep); }
+  .melding.fout { display: block; background: #f6e7e4; color: #8a2a1b; }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.demoformulier');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const melding = form.querySelector<HTMLElement>('.melding')!;
+    const knop = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    knop.disabled = true;
+    melding.className = 'melding hidden rounded-md px-4 py-3 font-semibold';
+    try {
+      const r = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      const data = await r.json();
+      if (!r.ok || !data.success) throw new Error(data.message);
+      form.reset();
+      melding.textContent = 'Bedankt, uw aanvraag is verstuurd. We nemen contact met u op.';
+      melding.classList.add('goed');
+    } catch {
+      melding.textContent = 'Versturen lukte niet. Probeer het later nog eens.';
+      melding.classList.add('fout');
+    } finally {
+      knop.disabled = false;
+    }
+  });
+</script>

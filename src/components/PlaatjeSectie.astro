@@ -1,0 +1,28 @@
+---
+import Plaatje from './Plaatje.astro';
+// Alleen eigenschappen die vaststaan; maten en montage moeten nog aangeleverd worden.
+const eigenschappen = [
+  { kop: 'Materiaal', tekst: 'Aluminium, met de tekst en de QR-code erin gegraveerd.' },
+  { kop: 'Eigen code', tekst: 'Elke container krijgt een eigen QR-code en nummer. Zo komt een melding altijd bij de juiste container terecht.' },
+  { kop: 'Scannen', tekst: 'Met de camera van een telefoon. Het logo in het midden laat de code gewoon leesbaar.' },
+  { kop: 'Maten en montage', tekst: '[[AANLEVEREN: afmetingen en bevestiging van het plaatje]]' },
+];
+---
+<section id="plaatje" class="bg-papier-2 py-20 sm:py-28" aria-labelledby="plaatje-kop">
+  <div class="mx-auto grid max-w-[90rem] items-center gap-12 px-4 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-16">
+    <div class="order-2 lg:order-1 lg:col-span-5">
+      <Plaatje id="sectie" class="mx-auto block h-auto w-full max-w-[26rem] lg:mx-0" titel="Het meldplaatje groot, met voorbeeldnummer 0123" />
+    </div>
+    <div class="order-1 lg:order-2 lg:col-span-6 lg:col-start-7">
+      <h2 id="plaatje-kop" class="max-w-[12ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)]">Eén plaatje per container</h2>
+      <dl class="mt-10 grid gap-7">
+        {eigenschappen.map((e) => (
+          <div class="grid gap-1 border-l-[3px] border-fris pl-5">
+            <dt class="font-display text-xl font-extrabold tracking-[-0.02em] text-inkt">{e.kop}</dt>
+            <dd class="max-w-[30rem] text-lg">{e.tekst}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</section>
