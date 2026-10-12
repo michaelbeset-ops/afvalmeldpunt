@@ -16,7 +16,7 @@ export const GET: APIRoute = ({ site }) => {
 2. Een bewoner scant de code met de camera van de telefoon. De meldpagina van precies die container opent in de browser.
 3. De bewoner kiest wat er aan de hand is: container vol, bijgeplaatst afval, defect of kapot, of stank, ongedierte en overig. Een foto, een opmerking en een e-mailadres voor een bericht als het is opgelost zijn optioneel.
 4. De bewoner krijgt een meldnummer. De melding staat direct in het dashboard bij de juiste container.
-5. In het dashboard krijgt elke melding een status (nieuw, in behandeling, opgelost) en een tijdlijn.
+5. In het dashboard krijgt elke melding een status: open, in behandeling of afgehandeld.
 
 Optie: een vulgraadsensor in de container meldt wanneer de container bijna vol is. Die melding staat in hetzelfde dashboard.
 

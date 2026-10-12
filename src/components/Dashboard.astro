@@ -1,311 +1,251 @@
 ---
-// Het beheerdashboard, nagebouwd zoals een echte Laravel-beheeromgeving eruitziet: horizontale
-// navigatie, witte titelbalk, grijze werkruimte met witte kaarten, filters, tabel met vinkjes.
-// Bewust in een neutrale systeemstijl en niet in de merkstijl van de site: zo herkent een
-// beheerder het als software. Alle gegevens zijn demogegevens. Meldingen die op de telefoon
-// hierboven worden verstuurd, komen hier binnen (event "afvalmeldpunt:melding").
+// Het beheeroverzicht, nagebouwd in de opzet van een gewone Laravel-beheeromgeving:
+// navigatie, titelbalk, tabs, filters, vier kaarten en een kale tabel per container.
+// Bewust sober en in Nunito, niet in de merkstijl van de site. Klik op een container en de
+// meldingen klappen eronder open. Meldingen van de telefoon hierboven komen binnen via het
+// event "afvalmeldpunt:melding". Alle gegevens zijn demogegevens.
 import '@fontsource-variable/nunito/wght.css';
 import { merkPaden } from '../lib/merk.mjs';
 import { CATEGORIEEN } from '../lib/meldingen.mjs';
 
-const CAT: Record<string, { naam: string; icoon: string }> = Object.fromEntries(CATEGORIEEN.map((c) => [c.id, { naam: c.naam, icoon: c.icoon }]));
-CAT.sensor = { naam: 'Bijna vol', icoon: '<path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l4.5-5"/><circle cx="12" cy="16" r="1.3"/>' };
+const CAT: Record<string, string> = Object.fromEntries(CATEGORIEEN.map((c) => [c.id, c.naam]));
+CAT.sensor = 'Bijna vol (sensor)';
 
-type Status = 'nieuw' | 'behandeling' | 'opgelost';
-interface Melding {
-  nr: string; cat: string; container: string; soort: string; plek: string; wijk: string; bron: 'Bewoner' | 'Sensor';
-  dag: 'vandaag' | 'gisteren'; tijd: string; status: Status; foto?: boolean; opmerking?: string; log: [string, string][];
-}
-const meldingen: Melding[] = [
-  { nr: 'M-24-08112', cat: 'bijgeplaatst', container: '0123', soort: 'Restafval', plek: 'Kerkstraat 12', wijk: 'Centrum', bron: 'Bewoner', dag: 'vandaag', tijd: '08:42', status: 'nieuw', foto: true, opmerking: 'Twee zakken en een doos naast de zuil.', log: [['08:42', 'Melding ontvangen']] },
-  { nr: 'M-24-08111', cat: 'vol', container: '0123', soort: 'Restafval', plek: 'Kerkstraat 12', wijk: 'Centrum', bron: 'Bewoner', dag: 'vandaag', tijd: '08:15', status: 'nieuw', log: [['08:15', 'Melding ontvangen']] },
-  { nr: 'M-24-08109', cat: 'defect', container: '0187', soort: 'PMD', plek: 'Stationsplein 3', wijk: 'Stationsgebied', bron: 'Bewoner', dag: 'vandaag', tijd: '07:58', status: 'behandeling', foto: true, opmerking: 'De klep gaat niet meer open.', log: [['07:58', 'Melding ontvangen'], ['08:20', 'Doorgezet naar de monteur']] },
-  { nr: 'S-0123-0412', cat: 'sensor', container: '0123', soort: 'Restafval', plek: 'Kerkstraat 12', wijk: 'Centrum', bron: 'Sensor', dag: 'vandaag', tijd: '06:30', status: 'behandeling', log: [['06:30', 'Vulgraad boven de drempel'], ['07:05', 'Ingepland voor lediging']] },
-  { nr: 'M-24-08104', cat: 'vol', container: '0124', soort: 'Papier', plek: 'Kerkstraat 12', wijk: 'Centrum', bron: 'Bewoner', dag: 'gisteren', tijd: '18:20', status: 'opgelost', log: [['18:20', 'Melding ontvangen'], ['21:10', 'Container geleegd, afgehandeld']] },
-  { nr: 'M-24-08101', cat: 'overig', container: '0210', soort: 'Restafval', plek: 'Molenweg 40', wijk: 'Molenwijk', bron: 'Bewoner', dag: 'gisteren', tijd: '14:02', status: 'opgelost', opmerking: 'Stinkt erg, vooral bij warm weer.', log: [['14:02', 'Melding ontvangen'], ['16:45', 'Bak gereinigd, afgehandeld']] },
-  { nr: 'S-0231-0388', cat: 'sensor', container: '0231', soort: 'PMD', plek: 'Molenweg 40', wijk: 'Molenwijk', bron: 'Sensor', dag: 'gisteren', tijd: '11:30', status: 'opgelost', log: [['11:30', 'Vulgraad boven de drempel'], ['13:15', 'Container geleegd, afgehandeld']] },
+type MStatus = 'Open' | 'In behandeling' | 'Afgehandeld';
+interface Melding { nr: string; cat: string; bron: 'Bewoner' | 'Sensor'; wanneer: string; foto: boolean; status: MStatus }
+interface Container { nr: string; soort: string; locatie: string; wijk: string; status: 'Actief' | 'In onderhoud' | 'Defect'; meldingen: Melding[] }
+
+const containers: Container[] = [
+  { nr: '0123', soort: 'Restafval', locatie: 'Kerkstraat 12 (AMP-0123/0124)', wijk: 'Centrum', status: 'Actief', meldingen: [
+    { nr: 'M-24-08112', cat: 'bijgeplaatst', bron: 'Bewoner', wanneer: 'vandaag 08:42', foto: true, status: 'Open' },
+    { nr: 'M-24-08111', cat: 'vol', bron: 'Bewoner', wanneer: 'vandaag 08:15', foto: false, status: 'Open' },
+    { nr: 'S-0123-0412', cat: 'sensor', bron: 'Sensor', wanneer: 'vandaag 06:30', foto: false, status: 'In behandeling' },
+  ] },
+  { nr: '0124', soort: 'Papier', locatie: 'Kerkstraat 12 (AMP-0123/0124)', wijk: 'Centrum', status: 'Actief', meldingen: [
+    { nr: 'M-24-08104', cat: 'vol', bron: 'Bewoner', wanneer: 'gisteren 18:20', foto: false, status: 'Afgehandeld' },
+  ] },
+  { nr: '0187', soort: 'PMD', locatie: 'Stationsplein 3 (AMP-0187/0188)', wijk: 'Stationsgebied', status: 'Defect', meldingen: [
+    { nr: 'M-24-08109', cat: 'defect', bron: 'Bewoner', wanneer: 'vandaag 07:58', foto: true, status: 'In behandeling' },
+  ] },
+  { nr: '0188', soort: 'Restafval', locatie: 'Stationsplein 3 (AMP-0187/0188)', wijk: 'Stationsgebied', status: 'Actief', meldingen: [] },
+  { nr: '0210', soort: 'Restafval', locatie: 'Molenweg 40 (AMP-0210/0211)', wijk: 'Molenwijk', status: 'Actief', meldingen: [
+    { nr: 'M-24-08101', cat: 'overig', bron: 'Bewoner', wanneer: 'gisteren 14:02', foto: false, status: 'Afgehandeld' },
+  ] },
+  { nr: '0211', soort: 'PMD', locatie: 'Molenweg 40 (AMP-0210/0211)', wijk: 'Molenwijk', status: 'In onderhoud', meldingen: [] },
+  { nr: '0231', soort: 'PMD', locatie: 'Schoolstraat 7 (AMP-0231)', wijk: 'Molenwijk', status: 'Actief', meldingen: [
+    { nr: 'S-0231-0388', cat: 'sensor', bron: 'Sensor', wanneer: 'gisteren 11:30', foto: false, status: 'Afgehandeld' },
+  ] },
+  { nr: '0245', soort: 'Papier', locatie: 'Beatrixlaan 22 (AMP-0245/0246)', wijk: 'Noord', status: 'Actief', meldingen: [] },
+  { nr: '0246', soort: 'Restafval', locatie: 'Beatrixlaan 22 (AMP-0245/0246)', wijk: 'Noord', status: 'Actief', meldingen: [] },
 ];
-const STATUS: Record<Status, string> = { nieuw: 'Nieuw', behandeling: 'In behandeling', opgelost: 'Opgelost' };
-const open = meldingen.filter((m) => m.status !== 'opgelost');
-const menu = ['Dashboard', 'Meldingen', 'Containers', 'Gebruikers', 'QR-codes', 'Rapportages'];
+const menu = ['Dashboard', 'Containers', 'Meldingen', 'Gebruikers', 'QR-codes', 'Rapportages'];
+const tabs = ['Containers', 'Meldingen', 'QR-plaatjes', 'Maandlijst'];
 ---
 <section id="dashboard" class="relative overflow-hidden bg-grond py-20 text-op-donker-sterk sm:py-28" aria-labelledby="dash-kop">
   <div class="mx-auto max-w-[90rem] px-4 sm:px-8 lg:px-16">
     <div class="grid gap-6 lg:grid-cols-12 lg:items-end">
       <h2 id="dash-kop" class="max-w-[14ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] text-wit lg:col-span-6">Alle meldingen, per container</h2>
-      <p class="max-w-[32rem] text-lg lg:col-span-5 lg:col-start-8">De beheerder ziet wat er gemeld is, waar en wanneer, met foto en opmerking. Elke melding heeft een status, zodat niets blijft liggen.</p>
+      <p class="max-w-[32rem] text-lg lg:col-span-5 lg:col-start-8">De beheerder ziet per container wat er gemeld is, waar en wanneer. Elke melding heeft een status, zodat niets blijft liggen.</p>
     </div>
 
-    <div class="app mt-12 overflow-hidden rounded-lg sm:mt-16" role="group" aria-label="Het beheerdashboard van afvalmeldpunt, met demogegevens" data-meldingen={JSON.stringify(meldingen)} data-cat={JSON.stringify(CAT)}>
-      <!-- browservenster -->
-      <div class="venster">
-        <span class="flex gap-1.5" aria-hidden="true"><i class="punt"></i><i class="punt"></i><i class="punt"></i></span>
-        <span class="url">
-          <svg width="9" height="11" viewBox="0 0 8 10" aria-hidden="true"><rect x="0.5" y="4" width="7" height="5.5" rx="1" fill="currentColor" /><path d="M2 4V3a2 2 0 0 1 4 0v1" fill="none" stroke="currentColor" stroke-width="1.2" /></svg>
-          app.afvalmeldpunt.nl/meldingen
-        </span>
-        <span class="w-[2.6rem]" aria-hidden="true"></span>
-      </div>
-
-      <!-- navigatie -->
+    <div class="app mt-12 overflow-hidden rounded-md sm:mt-16" role="group" aria-label="Het beheeroverzicht van afvalmeldpunt, met demogegevens" data-containers={JSON.stringify(containers)} data-cat={JSON.stringify(CAT)}>
       <div class="nav">
-        <span class="merk" aria-hidden="true">
-          <svg viewBox="0 0 48 48" class="h-6 w-6"><g set:html={merkPaden('#1c6a43', '#3f9f64')} /></svg>
-          <span class="leading-none"><span class="block text-[0.8125rem] font-bold tracking-wide text-[#1c6a43]">AFVALMELDPUNT</span><span class="block text-[0.5625rem] text-[#5b6371]">Meldingen &amp; containerbeheer</span></span>
-        </span>
-        <nav class="hidden h-full items-stretch gap-1 lg:flex" aria-label="Menu van het dashboard (voorbeeld)">
-          {menu.map((m) => <span class={`navlink ${m === 'Meldingen' ? 'actief' : ''}`}>{m}{m === 'Meldingen' && <span class="badge" data-badge>{open.length}</span>}</span>)}
-        </nav>
-        <span class="ml-auto flex items-center gap-3">
-          <span class="zoek hidden md:flex" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.5" /></svg>
-            Zoeken
-            <kbd>Ctrl K</kbd>
+        <div class="binnen flex h-full items-center gap-6">
+          <span class="flex shrink-0 items-center gap-1.5" aria-hidden="true">
+            <svg viewBox="0 0 48 48" class="h-6 w-6"><g set:html={merkPaden('#1c6a43', '#3f9f64')} /></svg>
+            <span class="leading-none"><span class="block text-[0.75rem] font-semibold text-[#1c6a43]">AFVALMELDPUNT</span><span class="block text-[0.5rem] text-[#1c6a43]">Meldingen &amp; containerbeheer</span></span>
           </span>
-          <svg class="hidden text-[#4b5563] sm:block" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z" /></svg>
-          <span class="hidden items-center gap-1 text-[0.875rem] text-[#374151] sm:flex" aria-hidden="true">B. Hendriks <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.4" /></svg></span>
-          <svg class="text-[#4b5563] lg:hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
-        </span>
+          <nav class="hidden h-full items-stretch lg:flex" aria-label="Menu van het beheeroverzicht (voorbeeld)">
+            {menu.map((m) => <span class={`navlink ${m === 'Containers' ? 'actief' : ''} ${m === 'Rapportages' ? 'hidden xl:flex' : ''}`}>{m}</span>)}
+          </nav>
+          <span class="ml-auto flex items-center gap-3" aria-hidden="true">
+            <span class="zoek hidden md:flex">
+              <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.5" /></svg>
+              Zoeken<kbd>Ctrl K</kbd>
+            </span>
+            <svg class="hidden text-[#4b5563] sm:block" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h16v11H8l-4 4z" /></svg>
+            <span class="hidden items-center gap-1.5 whitespace-nowrap text-[#374151] sm:flex">B. Hendriks <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.3" /></svg></span>
+            <svg class="text-[#4b5563] lg:hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+          </span>
+        </div>
       </div>
 
-      <!-- titelbalk -->
-      <div class="titelbalk"><p>Beheeroverzicht</p></div>
+      <div class="titelbalk"><p class="binnen">Beheeroverzicht</p></div>
 
       <div class="werkruimte">
-        <div class="flex gap-1 overflow-x-auto border-b border-[#e5e7eb]" role="tablist" aria-label="Filter op status">
-          {[['open', 'Open meldingen'], ['alles', 'Alle meldingen'], ['opgelost', 'Opgelost']].map(([id, naam], i) => (
-            <button type="button" role="tab" class="tab" data-filter={id} aria-selected={i === 0 ? 'true' : 'false'}>{naam}</button>
-          ))}
-        </div>
-
-        <div class="mt-5 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p class="text-[1.25rem] font-bold text-[#111827]">Meldingen per container</p>
-            <p class="mt-1 text-[0.875rem] text-[#4b5563]">Binnengekomen meldingen van bewoners en vulgraadsensoren, per container en wijk.</p>
+        <div class="binnen">
+          <div class="flex overflow-x-auto border-b border-[#e5e7eb]" aria-hidden="true">
+            {tabs.map((t) => <span class={`tab ${t === 'Containers' ? 'actief' : ''}`}>{t}</span>)}
           </div>
-          <span class="knop-groen" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4" /><path d="m10.5 5.5-1.5 3.5-3.5 1.5 1.5-3.5z" fill="none" stroke="currentColor" stroke-width="1.3" /></svg>
-            Rondleiding
-          </span>
-        </div>
 
-        <div class="mt-4 grid gap-2.5 sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)] lg:max-w-[46rem]" aria-hidden="true">
-          <span class="veld" style="color:#6b7280"><svg width="14" height="14" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.5" /></svg>Containernummer of straat</span>
-          <span class="veld justify-between">Demo-gemeente <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg></span>
-          <span class="veld justify-between">Alle wijken <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg></span>
-        </div>
+          <p class="mt-6 text-[1.375rem] font-bold text-[#111827]">Beheeroverzicht containers</p>
+          <p class="mt-1 text-[#4b5563]">Geplaatste containers met hun meldingen van bewoners en vulgraadsensoren, over alle wijken.</p>
 
-        <dl class="mt-4 grid grid-cols-2 gap-3 xl:grid-cols-4">
-          <div class="kaart kpi"><dt>Open meldingen</dt><dd><span data-kpi="open">{open.length}</span> <span data-eenheid="melding">meldingen</span></dd><dd class="toelichting">in Demo-gemeente</dd></div>
-          <div class="kaart kpi"><dt>Nieuw</dt><dd><span data-kpi="nieuw">{meldingen.filter((m) => m.status === 'nieuw').length}</span> <span data-eenheid="melding">meldingen</span></dd><dd class="toelichting">nog niet opgepakt</dd></div>
-          <div class="kaart kpi"><dt>Bijna vol</dt><dd><span data-kpi="sensor">{open.filter((m) => m.bron === 'Sensor').length}</span> <span data-eenheid="container">{open.filter((m) => m.bron === 'Sensor').length === 1 ? 'container' : 'containers'}</span></dd><dd class="toelichting">volgens de vulgraadsensor</dd></div>
-          <div class="kaart kpi"><dt>Opgelost</dt><dd><span data-kpi="opgelost">{meldingen.filter((m) => m.status === 'opgelost').length}</span> <span data-eenheid="melding">meldingen</span></dd><dd class="toelichting">afgelopen 7 dagen</dd></div>
-        </dl>
+          <div class="mt-4 grid gap-2 sm:grid-cols-[17.5rem_15.5rem_11rem]" aria-hidden="true">
+            <span class="veld" style="color:#6b7280"><svg width="14" height="14" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.5" /></svg>Containernummer of straat</span>
+            <span class="veld justify-between">Demo-gemeente (AMP-0100)<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg></span>
+            <span class="veld justify-between">Alle wijken<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg></span>
+          </div>
 
-        <div class="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
-          <div class="kaart min-w-0 overflow-hidden">
-            <div class="flex flex-wrap items-center gap-2.5 border-b border-[#e5e7eb] px-3.5 py-3">
-              <span class="chip hidden sm:inline-flex" aria-hidden="true">Restafval</span>
-              <span class="chip hidden sm:inline-flex" aria-hidden="true">PMD</span>
-              <span class="chip hidden sm:inline-flex" aria-hidden="true">Papier</span>
-              <span class="text-[0.8125rem] text-[#4b5563]"><strong class="font-semibold text-[#111827]" data-aantal>{open.length} meldingen</strong> &middot; nieuwste eerst</span>
+          <dl class="mt-4 grid grid-cols-2 gap-3 xl:grid-cols-4" data-kaarten></dl>
+
+          <div class="kaart mt-4 overflow-hidden">
+            <div class="flex flex-wrap items-center gap-2 px-4 py-3">
+              {[['alle', 'Alle'], ['melding', 'Met open melding'], ['defect', 'Defect']].map(([id, naam], i) => (
+                <button type="button" class="chip" data-filter={id} aria-pressed={i === 0 ? 'true' : 'false'}>{naam}</button>
+              ))}
+              <span class="ml-1 text-[#374151]" data-telling></span>
               <span class="ml-auto flex gap-2" aria-hidden="true">
                 <span class="knop-wit hidden sm:inline-flex"><svg width="14" height="14" viewBox="0 0 16 16"><rect x="2" y="2.5" width="12" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3" /><path d="M6 2.5v11M10 2.5v11" stroke="currentColor" stroke-width="1.3" /></svg>Kolommen</span>
                 <span class="knop-donker"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>Export</span>
               </span>
             </div>
             <div class="overflow-x-auto">
-              <table class="w-full border-collapse text-left text-[0.875rem]">
-                <thead class="hidden sm:table-header-group">
-                  <tr><th class="w-10"><span class="vinkje" aria-hidden="true"></span><span class="sr-only">Selecteren</span></th><th>Melding</th><th>Container</th><th class="hidden lg:table-cell">Locatie</th><th class="hidden 2xl:table-cell">Wijk</th><th class="hidden lg:table-cell">Ontvangen</th><th>Status</th></tr>
+              <table class="w-full border-collapse text-left">
+                <thead>
+                  <tr>
+                    <th class="hidden w-12 sm:table-cell"><span class="vinkje" aria-hidden="true"></span><span class="sr-only">Selecteren</span></th>
+                    <th>Container</th>
+                    <th class="hidden md:table-cell">Locatie</th>
+                    <th class="hidden lg:table-cell">Wijk</th>
+                    <th class="hidden sm:table-cell">Status</th>
+                    <th class="text-right">Meldingen</th>
+                  </tr>
                 </thead>
-                <tbody data-rijen>
-                  {meldingen.map((m, i) => (
-                    <tr class="rij" data-nr={m.nr} data-status={m.status} tabindex="0" aria-selected={i === 0 ? 'true' : 'false'} hidden={m.status === 'opgelost'}>
-                      <td class="hidden w-10 sm:table-cell"><span class="vinkje" aria-hidden="true"></span></td>
-                      <td><span class="meldlink">{CAT[m.cat].naam}</span><span class="sub">{m.nr} &middot; {m.bron}<span class="sm:hidden"> &middot; {m.dag} {m.tijd}</span></span></td>
-                      <td class="hidden sm:table-cell">{m.container}<span class="sub">{m.soort}</span></td>
-                      <td class="hidden lg:table-cell">{m.plek}</td>
-                      <td class="hidden 2xl:table-cell">{m.wijk}</td>
-                      <td class="hidden whitespace-nowrap lg:table-cell">{m.dag} {m.tijd}</td>
-                      <td><span class={`stat ${m.status}`}>{STATUS[m.status]}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
+                <tbody data-rijen></tbody>
               </table>
             </div>
           </div>
-
-          <aside class="kaart detail p-4" aria-live="polite" data-detail></aside>
         </div>
       </div>
     </div>
-    <p class="mt-4 text-sm text-op-donker">Demo-omgeving met voorbeeldgegevens. Klik op een melding en zet hem in behandeling of op opgelost.</p>
+    <p class="mt-4 text-sm text-op-donker">Demo-omgeving met voorbeeldgegevens. Klik op een container om de meldingen te zien en af te handelen.</p>
   </div>
 </section>
 
 <style>
-  /* Systeemlettertype en neutrale grijzen: de beheeromgeving hoort eruit te zien als software, niet als de site. */
-  .app { font-family: "Nunito Variable", "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif; background: #f3f4f6; color: #374151; font-size: 0.875rem; line-height: 1.45; }
-  .venster { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 1rem; background: #e5e7eb; border-bottom: 1px solid #d1d5db; }
-  .punt { display: block; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #c4c9d0; }
-  .url { margin: 0 auto; display: flex; flex: 1; max-width: 22rem; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.2rem 0.75rem; border-radius: 6px; background: #fff; font-size: 0.75rem; color: #5b6371; }
-  .nav { display: flex; align-items: center; gap: 1.75rem; height: 3.6rem; padding: 0 1.25rem; background: #fff; border-bottom: 1px solid #e5e7eb; }
-  .merk { display: flex; align-items: center; gap: 0.45rem; flex: none; }
-  .navlink { display: flex; align-items: center; gap: 0.4rem; padding: 0 0.75rem; border-bottom: 2px solid transparent; color: #4b5563; font-size: 0.875rem; }
+  /* Systeemstijl in Nunito: dit is de software, niet de site. */
+  .app { font-family: "Nunito Variable", "Nunito", "Segoe UI", system-ui, sans-serif; background: #f3f4f6; color: #374151; font-size: 0.875rem; line-height: 1.45; }
+  .binnen { max-width: 72rem; margin-inline: auto; padding-inline: 1rem; }
+  @media (min-width: 640px) { .binnen { padding-inline: 1.5rem; } }
+  .nav { height: 3.75rem; background: #fff; border-bottom: 1px solid #e5e7eb; }
+  .navlink { display: flex; align-items: center; padding: 0 0.85rem; white-space: nowrap; border-bottom: 2px solid transparent; color: #4b5563; }
   .navlink.actief { border-color: #1e40af; color: #111827; }
-  .badge { min-width: 1.15rem; padding: 0 0.3rem; border-radius: 999px; background: #1e40af; color: #fff; font-size: 0.6875rem; font-weight: 700; text-align: center; }
-  .zoek { align-items: center; gap: 0.5rem; padding: 0.4rem 0.6rem; width: 11rem; border: 1px solid #e5e7eb; border-radius: 6px; color: #5b6371; font-size: 0.8125rem; }
-  .zoek kbd { margin-left: auto; padding: 0 0.3rem; border: 1px solid #e5e7eb; border-radius: 4px; font-family: inherit; font-size: 0.6875rem; color: #9ca3af; }
-  .titelbalk { padding: 1rem 1.25rem; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 0.06); }
-  .titelbalk p { font-size: 1.25rem; color: #111827; }
-  .werkruimte { padding: 1.25rem; }
-  @media (min-width: 1024px) { .werkruimte { padding: 1.5rem 2rem 2rem; } }
-  .tab { padding: 0.55rem 0.9rem; margin-bottom: -1px; border-bottom: 2px solid transparent; color: #4b5563; cursor: pointer; white-space: nowrap; font-size: 0.875rem; }
-  .tab:hover { color: #111827; }
-  .tab[aria-selected="true"] { color: #111827; border-color: #1e40af; }
-  .knop-groen { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; border: 1px solid #a7d7b8; border-radius: 6px; background: #fff; color: #15803d; font-size: 0.8125rem; }
-  .veld { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #111827; font-size: 0.875rem; }
-  .kaart { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.04); }
-  .kpi { padding: 0.85rem 1rem; }
-  .kpi dt { font-size: 0.8125rem; color: #4b5563; }
-  .kpi dd { margin-top: 0.15rem; font-size: 1.0625rem; white-space: nowrap; font-weight: 700; color: #111827; }
-  @media (min-width: 640px) { .kpi dd:not(.toelichting) { font-size: 1.25rem; } }
-  .kpi .toelichting { margin-top: 0.2rem; white-space: normal; font-weight: 400; font-size: 0.75rem; color: #5b6371; }
-  .chip { align-items: center; padding: 0.35rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; color: #374151; font-size: 0.8125rem; }
-  .knop-wit { align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; font-size: 0.8125rem; }
-  .knop-donker { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; border-radius: 6px; background: #1f2937; color: #fff; font-weight: 600; font-size: 0.8125rem; }
-  .app th { padding: 0.7rem 0.85rem; border-bottom: 1px solid #e5e7eb; background: #f9fafb; font-weight: 600; color: #374151; white-space: nowrap; }
-  .app :global(.rij td) { padding: 0.7rem 0.85rem; border-bottom: 1px solid #f0f1f3; color: #374151; vertical-align: middle; }
-  .app :global(.rij) { cursor: pointer; transition: background-color 0.15s; }
-  .app :global(.rij:hover) { background: #f9fafb; }
-  .app :global(.rij[aria-selected="true"]) { background: #eff6ff; }
-  .app :global(.rij[hidden]) { display: none; }
-  .app :global(.rij.binnen) { animation: binnen 2.4s ease-out; }
-  @keyframes binnen { from { background: #dbeafe; } to { background: transparent; } }
-  .app :global(.vinkje) { display: block; width: 1rem; height: 1rem; border: 1.5px solid #5b6371; border-radius: 3px; }
-  .app :global(.meldlink) { display: block; color: #1e40af; font-weight: 600; }
-  .app :global(.sub) { display: block; font-size: 0.75rem; color: #5b6371; }
-  .app :global(.stat) { display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; color: #374151; }
-  .app :global(.stat::before) { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; }
-  .app :global(.stat.nieuw::before) { background: #ea580c; }
-  .app :global(.stat.behandeling::before) { background: #2563eb; }
-  .app :global(.stat.opgelost::before) { background: #16a34a; }
-  .detail :global(.foto) { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; }
-  .detail :global(.actie) { flex: 1; padding: 0.5rem; border-radius: 6px; font-weight: 600; font-size: 0.8125rem; cursor: pointer; transition: background-color 0.15s; }
-  .detail :global(.actie.vol) { background: #1f2937; color: #fff; }
-  .detail :global(.actie.vol:hover) { background: #111827; }
-  .detail :global(.actie.rand) { border: 1px solid #d1d5db; color: #374151; background: #fff; }
-  .detail :global(.actie.rand:hover) { background: #f9fafb; }
-  .detail :global(.tijdlijn li) { position: relative; padding: 0 0 0.6rem 1.1rem; }
-  .detail :global(.tijdlijn li::before) { content: ""; position: absolute; left: 0; top: 0.4rem; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: #1e40af; }
-  .detail :global(.tijdlijn li:not(:last-child)::after) { content: ""; position: absolute; left: 0.19rem; top: 0.95rem; bottom: 0; width: 1px; background: #e5e7eb; }
+  .zoek { align-items: center; gap: 0.5rem; width: 10.5rem; padding: 0.45rem 0.6rem; border: 1px solid #e5e7eb; border-radius: 6px; color: #4b5563; }
+  .zoek kbd { margin-left: auto; padding: 0 0.3rem; border: 1px solid #e5e7eb; border-radius: 4px; font-family: inherit; font-size: 0.6875rem; color: #6b7280; }
+  .titelbalk { padding: 1rem 0; background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / 0.08); }
+  .titelbalk p { font-size: 1.375rem; color: #111827; }
+  .werkruimte { padding: 1.5rem 0 2rem; }
+  .tab { padding: 0.6rem 1rem; margin-bottom: -1px; border-bottom: 2px solid transparent; color: #4b5563; white-space: nowrap; }
+  .tab.actief { border-color: #1e40af; color: #111827; }
+  .veld { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #111827; white-space: nowrap; overflow: hidden; }
+  .app :global(.kaart) { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
+  .app :global(.kpi) { padding: 1rem 1rem 0.9rem; }
+  .app :global(.kpi dt) { font-size: 0.8125rem; color: #4b5563; }
+  .app :global(.kpi .waarde) { margin-top: 0.1rem; font-size: 1.0625rem; font-weight: 700; color: #111827; white-space: nowrap; }
+  @media (min-width: 640px) { .app :global(.kpi .waarde) { font-size: 1.25rem; } }
+  .app :global(.kpi .toelichting) { margin-top: 0.25rem; font-size: 0.75rem; color: #4b5563; }
+  .chip { padding: 0.4rem 0.8rem; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; color: #374151; cursor: pointer; }
+  .chip:hover { background: #f9fafb; }
+  .chip[aria-pressed="true"] { border-color: #9ca3af; background: #f3f4f6; color: #111827; }
+  .knop-wit { align-items: center; gap: 0.45rem; padding: 0.5rem 0.85rem; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; }
+  .knop-donker { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.5rem 0.9rem; border-radius: 6px; background: #1f2937; color: #fff; font-weight: 600; }
+  .app th { padding: 0.75rem 1rem; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; background: #f9fafb; font-weight: 600; color: #374151; white-space: nowrap; }
+  .app :global(.rij td) { padding: 0.8rem 1rem; border-bottom: 1px solid #e5e7eb; color: #374151; }
+  .app :global(.rij) { cursor: pointer; }
+  .app :global(.rij:hover), .app :global(.rij[data-open="true"]) { background: #f9fafb; }
+  .app :global(.rij.binnen-gekomen) { animation: binnen 2.4s ease-out; }
+  @keyframes binnen { from { background: #fef9c3; } to { background: transparent; } }
+  .app :global(.rij .nr) { color: #111827; }
+  .app :global(.vinkje) { display: block; width: 1rem; height: 1rem; border: 1.5px solid #6b7280; border-radius: 3px; background: #fff; }
+  .app :global(.uitklap > td) { padding: 0 0.75rem 0.85rem; border-bottom: 1px solid #e5e7eb; background: #f9fafb; }
+  @media (min-width: 640px) { .app :global(.uitklap > td) { padding: 0 1rem 1rem 3.5rem; } }
+  .app :global(.uitklap table) { width: 100%; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+  .app :global(.uitklap th) { padding: 0.5rem 0.75rem; border-top: 0; font-size: 0.8125rem; background: #fff; }
+  .app :global(.uitklap .m td) { padding: 0.55rem 0.75rem; border-top: 1px solid #f0f1f3; font-size: 0.8125rem; color: #374151; background: #fff; }
+  .app :global(.actie) { padding: 0.25rem 0.6rem; border: 1px solid #d1d5db; border-radius: 5px; background: #fff; color: #374151; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .app :global(.actie:hover) { background: #f3f4f6; }
 </style>
 
 <script>
-  type Status = 'nieuw' | 'behandeling' | 'opgelost';
-  interface Melding { nr: string; cat: string; container: string; soort: string; plek: string; wijk: string; bron: string; dag: string; tijd: string; status: Status; foto?: boolean; opmerking?: string; log: [string, string][] }
+  type MStatus = 'Open' | 'In behandeling' | 'Afgehandeld';
+  interface Melding { nr: string; cat: string; bron: string; wanneer: string; foto: boolean; status: MStatus }
+  interface Container { nr: string; soort: string; locatie: string; wijk: string; status: string; meldingen: Melding[] }
   const app = document.querySelector<HTMLElement>('.app');
   if (app) {
-    const meldingen: Melding[] = JSON.parse(app.dataset.meldingen!);
-    const CAT: Record<string, { naam: string }> = JSON.parse(app.dataset.cat!);
-    const STATUS: Record<Status, string> = { nieuw: 'Nieuw', behandeling: 'In behandeling', opgelost: 'Opgelost' };
+    const containers: Container[] = JSON.parse(app.dataset.containers!);
+    const CAT: Record<string, string> = JSON.parse(app.dataset.cat!);
     const rijen = app.querySelector<HTMLElement>('[data-rijen]')!;
-    const detail = app.querySelector<HTMLElement>('[data-detail]')!;
-    let filter = 'open';
-    let gekozen = meldingen[0].nr;
-    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-    const foto = `<svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" class="h-full w-full" aria-hidden="true"><rect width="160" height="90" fill="#cfd8d3"/><rect y="64" width="160" height="26" fill="#9aa59f"/><rect x="58" y="10" width="30" height="58" rx="5" fill="#3a4440"/><rect x="63" y="18" width="20" height="12" rx="2" fill="#c9d0d4"/><rect x="58" y="56" width="30" height="7" fill="#98a1a6"/><path d="M104 72c-7 0-11-3-11-9s5-11 11-13c6 2 11 7 11 13s-4 9-11 9z" fill="#2f3733"/><path d="M122 73c-6 0-9-3-9-7s4-8 9-9c5 1 8 5 8 9s-3 7-8 7z" fill="#59625e"/><rect x="28" y="54" width="20" height="16" fill="#b08d5a"/></svg>`;
+    const kaarten = app.querySelector<HTMLElement>('[data-kaarten]')!;
+    let filter = 'alle';
+    let open: string | null = null;
 
-    const rijHtml = (m: Melding) => `
-      <tr class="rij" data-nr="${m.nr}" data-status="${m.status}" tabindex="0">
-        <td class="hidden w-10 sm:table-cell"><span class="vinkje" aria-hidden="true"></span></td>
-        <td><span class="meldlink">${CAT[m.cat].naam}</span><span class="sub">${m.nr} &middot; ${m.bron}<span class="sm:hidden"> &middot; ${m.dag} ${m.tijd}</span></span></td>
-        <td class="hidden sm:table-cell">${m.container}<span class="sub">${m.soort}</span></td>
-        <td class="hidden lg:table-cell">${m.plek}</td>
-        <td class="hidden 2xl:table-cell">${m.wijk}</td>
-        <td class="hidden whitespace-nowrap lg:table-cell">${m.dag} ${m.tijd}</td>
-        <td><span class="stat ${m.status}">${STATUS[m.status]}</span></td>
-      </tr>`;
+    const openTel = (c: Container) => c.meldingen.filter((m) => m.status !== 'Afgehandeld').length;
+    const mv = (n: number, een: string, meer: string) => `${n} ${n === 1 ? een : meer}`;
+    const volgende: Record<MStatus, [string, MStatus] | null> = { Open: ['In behandeling', 'In behandeling'], 'In behandeling': ['Afhandelen', 'Afgehandeld'], Afgehandeld: null };
 
-    const toonDetail = () => {
-      const m = meldingen.find((x) => x.nr === gekozen);
-      if (!m) { detail.innerHTML = '<p style="color:#5b6371">Kies een melding.</p>'; return; }
-      const knoppen = m.status === 'opgelost'
-        ? `<button type="button" class="actie rand" data-zet="behandeling">Heropenen</button>`
-        : `${m.status === 'nieuw' ? '<button type="button" class="actie rand" data-zet="behandeling">In behandeling</button>' : ''}<button type="button" class="actie vol" data-zet="opgelost">Afhandelen</button>`;
-      detail.innerHTML = `
-        <div class="flex items-start justify-between gap-3">
-          <div><p style="font-size:.75rem;color:#5b6371">${m.nr}</p><p style="font-size:1.0625rem;font-weight:700;color:#111827">${CAT[m.cat].naam}</p></div>
-          <span class="stat ${m.status}">${STATUS[m.status]}</span>
-        </div>
-        ${m.foto ? `<span class="foto mt-3" role="img" aria-label="Foto bij de melding">${foto}</span>` : ''}
-        ${m.opmerking ? `<p class="mt-3" style="padding:.5rem .75rem;border-radius:6px;background:#f3f4f6;color:#111827">&ldquo;${esc(m.opmerking)}&rdquo;</p>` : ''}
-        <dl class="mt-3 grid grid-cols-[6rem_minmax(0,1fr)] gap-y-1.5" style="font-size:.8125rem">
-          <dt style="color:#5b6371">Container</dt><dd style="color:#111827;font-weight:600">${m.container}, ${m.soort.toLowerCase()}</dd>
-          <dt style="color:#5b6371">Locatie</dt><dd style="color:#111827;font-weight:600">${m.plek}</dd>
-          <dt style="color:#5b6371">Wijk</dt><dd style="color:#111827;font-weight:600">${m.wijk}</dd>
-          <dt style="color:#5b6371">Bron</dt><dd style="color:#111827;font-weight:600">${m.bron}</dd>
-          <dt style="color:#5b6371">Ontvangen</dt><dd style="color:#111827;font-weight:600">${m.dag} ${m.tijd}</dd>
-        </dl>
-        <p class="mt-4" style="font-size:.75rem;font-weight:700;color:#5b6371">Verloop</p>
-        <ol class="tijdlijn mt-2" style="font-size:.8125rem">${m.log.map(([t, s]) => `<li><span style="color:#5b6371">${t}</span> ${esc(s)}</li>`).join('')}</ol>
-        <div class="mt-3 flex gap-2">${knoppen}</div>`;
+    const uitklap = (c: Container) => c.meldingen.length === 0
+      ? `<tr class="uitklap"><td colspan="6"><p style="padding:.75rem 0 0;color:#4b5563">Geen meldingen voor deze container.</p></td></tr>`
+      : `<tr class="uitklap"><td colspan="6"><table><thead><tr><th class="hidden sm:table-cell">Ontvangen</th><th>Melding</th><th class="hidden sm:table-cell">Bron</th><th class="hidden sm:table-cell">Foto</th><th class="hidden sm:table-cell">Status</th><th><span class="sr-only">Actie</span></th></tr></thead><tbody>${c.meldingen.map((m) => `
+          <tr class="m"><td class="hidden sm:table-cell" style="white-space:nowrap">${m.wanneer}</td><td>${CAT[m.cat]}<span class="block sm:hidden" style="color:#4b5563">${m.wanneer} &middot; ${m.status}</span></td><td class="hidden sm:table-cell">${m.bron}</td><td class="hidden sm:table-cell">${m.foto ? 'Ja' : 'Nee'}</td><td class="hidden sm:table-cell" style="white-space:nowrap">${m.status}</td>
+          <td style="text-align:right">${volgende[m.status] ? `<button type="button" class="actie" data-c="${c.nr}" data-m="${m.nr}">${volgende[m.status]![0]}</button>` : ''}</td></tr>`).join('')}</tbody></table></td></tr>`;
+
+    const teken = (nieuw?: string) => {
+      const zichtbaar = containers.filter((c) => filter === 'alle' || (filter === 'melding' ? openTel(c) > 0 : c.status === 'Defect'));
+      rijen.innerHTML = zichtbaar.map((c) => {
+        const n = openTel(c);
+        return `<tr class="rij${c.nr === nieuw ? ' binnen-gekomen' : ''}" data-nr="${c.nr}" tabindex="0" data-open="${c.nr === open}">
+          <td class="hidden sm:table-cell"><span class="vinkje" aria-hidden="true"></span></td>
+          <td><span class="nr">${c.nr}</span><span class="block md:hidden" style="font-size:.75rem;color:#4b5563">${c.locatie}<span class="sm:hidden"> &middot; ${c.status}</span></span></td>
+          <td class="hidden md:table-cell">${c.locatie}</td>
+          <td class="hidden lg:table-cell">${c.wijk}</td>
+          <td class="hidden sm:table-cell">${c.status}</td>
+          <td style="text-align:right">${n ? `${n} open` : '&mdash;'}</td></tr>${c.nr === open ? uitklap(c) : ''}`;
+      }).join('');
+      app.querySelector('[data-telling]')!.innerHTML = `<strong style="color:#111827">${mv(zichtbaar.length, 'container', 'containers')}</strong> &middot; 1&ndash;${zichtbaar.length} &middot; op eerstvolgende actie`;
+      const metOpen = containers.filter((c) => openTel(c) > 0).length;
+      const vol = containers.filter((c) => c.meldingen.some((m) => m.cat === 'sensor' && m.status !== 'Afgehandeld')).length;
+      const bij = containers.filter((c) => c.meldingen.some((m) => m.cat === 'bijgeplaatst' && m.status !== 'Afgehandeld')).length;
+      const defect = containers.filter((c) => c.status === 'Defect').length;
+      kaarten.innerHTML = [
+        ['Open meldingen', mv(metOpen, 'container', 'containers'), 'in Demo-gemeente (AMP-0100)'],
+        ['Bijna vol', mv(vol, 'container', 'containers'), 'volgens de vulgraadsensor'],
+        ['Bijplaatsing', mv(bij, 'container', 'containers'), 'afval naast de container gemeld'],
+        ['Defect', mv(defect, 'container', 'containers'), 'wacht op reparatie'],
+      ].map(([t, w, s]) => `<div class="kaart kpi"><dt>${t}</dt><dd class="waarde">${w}</dd><dd class="toelichting">${s}</dd></div>`).join('');
     };
 
-    const teken = (nieuwNr?: string) => {
-      rijen.innerHTML = meldingen.map(rijHtml).join('');
-      let zichtbaar = 0;
-      rijen.querySelectorAll<HTMLElement>('.rij').forEach((r) => {
-        const s = r.dataset.status;
-        r.hidden = filter === 'open' ? s === 'opgelost' : filter === 'opgelost' ? s !== 'opgelost' : false;
-        if (!r.hidden) zichtbaar++;
-        r.setAttribute('aria-selected', String(r.dataset.nr === gekozen));
-        if (r.dataset.nr === nieuwNr) r.classList.add('binnen');
-      });
-      const tel = (f: (m: Melding) => boolean) => String(meldingen.filter(f).length);
-      const zet = (sel: string, w: string) => {
-        const el = app.querySelector(sel);
-        if (!el) return;
-        el.textContent = w;
-        const eenheid = el.nextElementSibling as HTMLElement | null;
-        if (eenheid?.dataset.eenheid) eenheid.textContent = w === '1' ? eenheid.dataset.eenheid : `${eenheid.dataset.eenheid}${eenheid.dataset.eenheid === 'melding' ? 'en' : 's'}`;
-      };
-      zet('[data-kpi="open"]', tel((m) => m.status !== 'opgelost'));
-      zet('[data-kpi="nieuw"]', tel((m) => m.status === 'nieuw'));
-      zet('[data-kpi="sensor"]', tel((m) => m.bron === 'Sensor' && m.status !== 'opgelost'));
-      zet('[data-kpi="opgelost"]', tel((m) => m.status === 'opgelost'));
-      zet('[data-badge]', tel((m) => m.status !== 'opgelost'));
-      zet('[data-aantal]', `${zichtbaar} ${zichtbaar === 1 ? 'melding' : 'meldingen'}`);
-      toonDetail();
-    };
-
-    const kies = (r: HTMLElement | null) => { if (r?.dataset.nr) { gekozen = r.dataset.nr; teken(); } };
-    rijen.addEventListener('click', (e) => kies((e.target as HTMLElement).closest('.rij')));
-    rijen.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); kies((e.target as HTMLElement).closest('.rij')); } });
-    app.querySelectorAll<HTMLElement>('[data-filter]').forEach((t) => t.addEventListener('click', () => {
-      filter = t.dataset.filter!;
-      app.querySelectorAll('[data-filter]').forEach((x) => x.setAttribute('aria-selected', String(x === t)));
+    rijen.addEventListener('click', (e) => {
+      const el = e.target as HTMLElement;
+      const actie = el.closest<HTMLElement>('.actie');
+      if (actie) {
+        const m = containers.find((c) => c.nr === actie.dataset.c)?.meldingen.find((x) => x.nr === actie.dataset.m);
+        if (m && volgende[m.status]) m.status = volgende[m.status]![1];
+        teken();
+        return;
+      }
+      const rij = el.closest<HTMLElement>('.rij');
+      if (rij) { open = open === rij.dataset.nr ? null : rij.dataset.nr!; teken(); }
+    });
+    rijen.addEventListener('keydown', (e) => {
+      const rij = (e.target as HTMLElement).closest<HTMLElement>('.rij');
+      if (rij && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open = open === rij.dataset.nr ? null : rij.dataset.nr!; teken(); }
+    });
+    app.querySelectorAll<HTMLElement>('[data-filter]').forEach((k) => k.addEventListener('click', () => {
+      filter = k.dataset.filter!;
+      app.querySelectorAll('[data-filter]').forEach((x) => x.setAttribute('aria-pressed', String(x === k)));
       teken();
     }));
-    detail.addEventListener('click', (e) => {
-      const knop = (e.target as HTMLElement).closest<HTMLElement>('[data-zet]');
-      const m = meldingen.find((x) => x.nr === gekozen);
-      if (!knop || !m) return;
-      const nu = new Date().toTimeString().slice(0, 5);
-      m.status = knop.dataset.zet as Status;
-      m.log.push([nu, m.status === 'opgelost' ? 'Afgehandeld door B. Hendriks' : m.log.some(([, s]) => s.startsWith('Afgehandeld')) ? 'Heropend' : 'In behandeling genomen door B. Hendriks']);
-      teken();
-    });
-    // Melding van de telefoon in de meldflow: komt bovenaan binnen als nieuwe melding.
+    // Melding van de telefoon in de meldflow: komt binnen bij container 0123.
     document.addEventListener('afvalmeldpunt:melding', (e) => {
-      const d = (e as CustomEvent).detail as { nr: string; categorie: string; foto: boolean; opmerking: string };
-      meldingen.unshift({ nr: d.nr, cat: d.categorie, container: '0123', soort: 'Restafval', plek: 'Kerkstraat 12', wijk: 'Centrum', bron: 'Bewoner', dag: 'vandaag', tijd: '09:41', status: 'nieuw', foto: d.foto, opmerking: d.opmerking || undefined, log: [['09:41', 'Melding ontvangen']] });
-      gekozen = d.nr;
-      if (filter === 'opgelost') filter = 'open';
-      app.querySelectorAll('[data-filter]').forEach((x) => x.setAttribute('aria-selected', String((x as HTMLElement).dataset.filter === filter)));
-      teken(d.nr);
+      const d = (e as CustomEvent).detail as { nr: string; categorie: string; foto: boolean };
+      containers[0].meldingen.unshift({ nr: d.nr, cat: d.categorie, bron: 'Bewoner', wanneer: 'vandaag 09:41', foto: d.foto, status: 'Open' });
+      open = containers[0].nr;
+      if (filter === 'defect') filter = 'alle';
+      app.querySelectorAll('[data-filter]').forEach((x) => x.setAttribute('aria-pressed', String((x as HTMLElement).dataset.filter === filter)));
+      teken(containers[0].nr);
     });
+    open = containers[0].nr;
     teken();
   }
 </script>
