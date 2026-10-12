@@ -153,7 +153,7 @@ const tabs = ['Containers', 'Meldingen', 'QR-plaatjes', 'Maandlijst'];
   .app th { padding: 0.75rem 1rem; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; background: #f9fafb; font-weight: 600; color: #374151; white-space: nowrap; }
   .app :global(.rij td) { padding: 0.8rem 1rem; border-bottom: 1px solid #e5e7eb; color: #374151; }
   .app :global(.rij) { cursor: pointer; }
-  .app :global(.rij:hover), .app :global(.rij[aria-expanded="true"]) { background: #f9fafb; }
+  .app :global(.rij:hover), .app :global(.rij[data-open="true"]) { background: #f9fafb; }
   .app :global(.rij.binnen-gekomen) { animation: binnen 2.4s ease-out; }
   @keyframes binnen { from { background: #fef9c3; } to { background: transparent; } }
   .app :global(.rij .nr) { color: #111827; }
@@ -194,7 +194,7 @@ const tabs = ['Containers', 'Meldingen', 'QR-plaatjes', 'Maandlijst'];
       const zichtbaar = containers.filter((c) => filter === 'alle' || (filter === 'melding' ? openTel(c) > 0 : c.status === 'Defect'));
       rijen.innerHTML = zichtbaar.map((c) => {
         const n = openTel(c);
-        return `<tr class="rij${c.nr === nieuw ? ' binnen-gekomen' : ''}" data-nr="${c.nr}" tabindex="0" aria-expanded="${c.nr === open}">
+        return `<tr class="rij${c.nr === nieuw ? ' binnen-gekomen' : ''}" data-nr="${c.nr}" tabindex="0" data-open="${c.nr === open}">
           <td class="hidden sm:table-cell"><span class="vinkje" aria-hidden="true"></span></td>
           <td><span class="nr">${c.nr}</span><span class="block md:hidden" style="font-size:.75rem;color:#4b5563">${c.locatie}<span class="sm:hidden"> &middot; ${c.status}</span></span></td>
           <td class="hidden md:table-cell">${c.locatie}</td>
