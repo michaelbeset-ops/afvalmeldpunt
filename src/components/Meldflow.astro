@@ -61,11 +61,11 @@ const alGemeld: Record<string, string> = { vol: 'Vandaag al 2 keer gemeld' };
                 <span class="soortband" style="background:#98a1a6"></span>
                 <span>
                   <span class="block text-[0.6875rem] font-semibold tracking-wide text-tekst-2 uppercase">Restafval</span>
-                  <span class="block font-display text-[1.05rem] font-extrabold tracking-[-0.02em] text-inkt">Container 0123</span>
+                  <span class="block font-display text-[1.05rem] font-bold tracking-[-0.015em] text-inkt">Container 0123</span>
                   <span class="block text-[0.75rem] text-tekst-2">Kerkstraat 12</span>
                 </span>
               </div>
-              <p class="mt-4 font-display text-[1.25rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Wat is er aan de hand?</p>
+              <p class="mt-4 font-display text-[1.25rem] leading-tight font-bold tracking-[-0.015em] text-inkt">Wat is er aan de hand?</p>
               <div class="mt-3 grid gap-2">
                 {CATEGORIEEN.map((c) => (
                   <button type="button" class="keuze" data-keuze={c.id} data-naam={c.naam}>
@@ -86,7 +86,7 @@ const alGemeld: Record<string, string> = { vol: 'Vandaag al 2 keer gemeld' };
                 <button type="button" class="terug" data-naar="1">Terug</button>
                 <span class="text-[0.6875rem] font-semibold text-tekst-2">Container 0123</span>
               </div>
-              <p class="font-display text-[1.25rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt" data-gekozen>Container vol</p>
+              <p class="font-display text-[1.25rem] leading-tight font-bold tracking-[-0.015em] text-inkt" data-gekozen>Container vol</p>
               <p class="mt-0.5 text-[0.75rem] text-tekst-2">Alles hieronder mag, niets hoeft.</p>
 
               <button type="button" class="fotovak mt-3" data-foto>
@@ -122,7 +122,7 @@ const alGemeld: Record<string, string> = { vol: 'Vandaag al 2 keer gemeld' };
                 <div class="mx-auto mt-5 grid h-14 w-14 place-items-center rounded-full bg-bos text-wit">
                   <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
                 </div>
-                <p class="mt-4 font-display text-[1.25rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Bedankt, je melding is binnen</p>
+                <p class="mt-4 font-display text-[1.25rem] leading-tight font-bold tracking-[-0.015em] text-inkt">Bedankt, je melding is binnen</p>
                 <p class="mt-1 text-[0.75rem] text-tekst-2">Meldnummer <strong class="text-inkt" data-meldnr>M-24-08113</strong></p>
                 <dl class="samenvatting mt-4 text-left text-[0.75rem]">
                   <div><dt>Container</dt><dd>0123, restafval</dd></div>
@@ -164,7 +164,7 @@ const alGemeld: Record<string, string> = { vol: 'Vandaag al 2 keer gemeld' };
       <ol class="stappenlijst mt-10 grid gap-1">
         {stappen.map((s, i) => (
           <li class="flex items-baseline gap-4 py-2 text-lg" data-lijst={i}>
-            <span class="nr font-display font-extrabold">{i + 1}</span>
+            <span class="nr font-display font-bold">{i + 1}</span>
             <span>{s}</span>
           </li>
         ))}

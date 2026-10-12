@@ -84,7 +84,7 @@ const mail = `<a href="mailto:${BEDRIJF.email}">${BEDRIJF.email}</a>`;
 
       <nav aria-labelledby="inhoud-kop" class="hidden lg:col-span-4 lg:col-start-9 lg:block">
         <div class="sticky top-8 border-l border-inkt/15 pl-6">
-          <p id="inhoud-kop" class="font-display font-extrabold tracking-[-0.02em] text-inkt">Op deze pagina</p>
+          <p id="inhoud-kop" class="font-display font-bold tracking-[-0.015em] text-inkt">Op deze pagina</p>
           <ol class="mt-3 grid gap-1.5 text-sm">
             {hoofdstukken.map(([id, naam]) => <li><a class="text-tekst underline-offset-4 hover:text-bos hover:underline" href={`#${id}`}>{naam}</a></li>)}
           </ol>

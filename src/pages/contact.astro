@@ -19,8 +19,8 @@ const stappen = [
       <ol class="mt-10 grid gap-6 border-t-2 border-inkt pt-8">
         {stappen.map(([kop, tekst], i) => (
           <li class="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3">
-            <span class="font-display text-xl font-extrabold text-bos">{i + 1}</span>
-            <span><span class="block font-display text-xl font-extrabold tracking-[-0.02em] text-inkt">{kop}</span><span class="mt-1 block">{tekst}</span></span>
+            <span class="font-display text-xl font-bold text-bos">{i + 1}</span>
+            <span><span class="block font-display text-xl font-bold tracking-[-0.015em] text-inkt">{kop}</span><span class="mt-1 block">{tekst}</span></span>
           </li>
         ))}
       </ol>
