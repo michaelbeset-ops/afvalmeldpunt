@@ -29,8 +29,11 @@ const graaf = { '@context': 'https://schema.org', '@graph': [site, organisatie, 
     <title>{titel}</title>
     <meta name="description" content={omschrijving} />
     {noindex ? <meta name="robots" content="noindex, nofollow" /> : <link rel="canonical" href={canonical} />}
+    <link rel="icon" href={pad("/favicon.ico")} sizes="48x48" />
     <link rel="icon" href={pad("/favicon.svg")} type="image/svg+xml" />
+    <link rel="icon" href={pad("/favicon-96x96.png")} type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href={pad("/apple-touch-icon.png")} />
+    <link rel="manifest" href={pad("/site.webmanifest")} />
     <link rel="sitemap" href={pad("/sitemap-index.xml")} />
     <link rel="alternate" type="text/markdown" title="Samenvatting voor AI-assistenten" href={pad("/llms.txt")} />
     <meta name="author" content={BEDRIJF.naam} />
