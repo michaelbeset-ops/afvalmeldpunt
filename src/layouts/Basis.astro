@@ -1,5 +1,6 @@
 ---
 import { pad, preview } from '../lib/pad';
+import { BEDRIJF, kvkBekend } from '../lib/bedrijf';
 import '../styles/global.css';
 import Cookiemelding from '../components/Cookiemelding.astro';
 interface Props { titel: string; omschrijving: string; noindex?: boolean; jsonld?: Record<string, unknown>[] }
@@ -11,9 +12,14 @@ const ogBeeld = new URL(pad('/og.jpg'), Astro.site);
 const ogAlt = 'Aluminium plaatje met QR-code van afvalmeldpunt, met de kop: Melden bij de container zelf, met één scan.';
 // Alleen feiten die vaststaan (naam, adres van de site, taal). Organisatiegegevens zoals KvK,
 // adres en telefoon komen er pas bij als ze zijn aangeleverd.
-const site = { '@type': 'WebSite', '@id': new URL(pad('/#website'), Astro.site).href, name: 'afvalmeldpunt', url: new URL(pad('/'), Astro.site).href, inLanguage: 'nl-NL' };
+const site: Record<string, unknown> = { '@type': 'WebSite', '@id': new URL(pad('/#website'), Astro.site).href, name: 'afvalmeldpunt', url: new URL(pad('/'), Astro.site).href, inLanguage: 'nl-NL' };
+const organisatie = {
+  '@type': 'Organization', '@id': new URL(pad('/#organisatie'), Astro.site).href, name: BEDRIJF.naam, url: BEDRIJF.website, email: BEDRIJF.email,
+  ...(kvkBekend ? { identifier: { '@type': 'PropertyValue', propertyID: 'KvK-nummer', value: BEDRIJF.kvk } } : {}),
+};
+site['publisher'] = { '@id': organisatie['@id'] };
 const pagina = { '@type': 'WebPage', '@id': canonical.href + '#pagina', url: canonical.href, name: titel, description: omschrijving, inLanguage: 'nl-NL', isPartOf: { '@id': site['@id'] } };
-const graaf = { '@context': 'https://schema.org', '@graph': [site, pagina, ...jsonld] };
+const graaf = { '@context': 'https://schema.org', '@graph': [site, organisatie, pagina, ...jsonld] };
 ---
 <!doctype html>
 <html lang="nl">
@@ -26,6 +32,8 @@ const graaf = { '@context': 'https://schema.org', '@graph': [site, pagina, ...js
     <link rel="icon" href={pad("/favicon.svg")} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={pad("/apple-touch-icon.png")} />
     <link rel="sitemap" href={pad("/sitemap-index.xml")} />
+    <link rel="alternate" type="text/markdown" title="Samenvatting voor AI-assistenten" href={pad("/llms.txt")} />
+    <meta name="author" content={BEDRIJF.naam} />
     <meta name="theme-color" content="#142019" />
     <meta property="og:site_name" content="afvalmeldpunt" />
     <meta property="og:title" content={titel} />

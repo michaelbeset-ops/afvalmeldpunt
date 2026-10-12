@@ -1,0 +1,23 @@
+---
+import { pad } from '../lib/pad';
+import { BEDRIJF } from '../lib/bedrijf';
+---
+<section id="demo" class="bg-papier-2 py-20 sm:py-24" aria-labelledby="demo-kop">
+  <div class="mx-auto grid max-w-[90rem] gap-8 px-4 sm:px-8 lg:grid-cols-12 lg:items-end lg:gap-8 lg:px-16">
+    <div class="lg:col-span-7">
+      <h2 id="demo-kop" class="max-w-[16ch] text-[clamp(2.25rem,1.5rem+3vw,4rem)]">Zien hoe het werkt voor uw containers?</h2>
+      <p class="mt-5 max-w-[30rem] text-lg">We laten de meldpagina en het dashboard zien in een korte demo.</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-3 lg:col-span-4 lg:col-start-9 lg:justify-end">
+      <a href={pad("/contact/")} class="knop inline-flex items-center gap-2.5 rounded-md bg-bos px-5 py-3.5 font-display text-base font-bold text-wit shadow-knop transition-colors duration-200 hover:bg-bos-diep">
+        Demo aanvragen
+        <svg class="pijl h-4 w-4 transition-transform duration-200" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+      </a>
+      <a href={`mailto:${BEDRIJF.email}`} class="py-2 font-semibold text-bos underline underline-offset-2">{BEDRIJF.email}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .knop:hover .pijl { transform: translateX(3px); }
+</style>

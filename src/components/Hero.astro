@@ -1,4 +1,5 @@
 ---
+import { pad } from '../lib/pad';
 // De hero is een doorsnede: boven het maaiveld een rij inworpzuilen op hun
 // veiligheidsplatform, eronder de betonputten met de bakken. Detail A vergroot het
 // meldplaatje. Beeld en put zitten in hetzelfde grid, zodat de zuilen op elk scherm
@@ -44,7 +45,7 @@ const gevels = `
         browser wat er mis is, zonder app of account. U ziet de meldingen per container in een dashboard.
       </p>
       <div class="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 lg:mt-8">
-        <a href="#demo" class="knop inline-flex items-center gap-2.5 rounded-md bg-bos px-5 py-3.5 font-display text-base font-bold text-wit shadow-knop transition-colors duration-200 hover:bg-bos-diep">
+        <a href={pad("/contact/")} class="knop inline-flex items-center gap-2.5 rounded-md bg-bos px-5 py-3.5 font-display text-base font-bold text-wit shadow-knop transition-colors duration-200 hover:bg-bos-diep">
           Demo aanvragen
           <svg class="pijl h-4 w-4 transition-transform duration-200" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
         </a>

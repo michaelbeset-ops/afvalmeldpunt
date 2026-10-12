@@ -86,3 +86,13 @@ Fonts: Schibsted Grotesk 800 (koppen), Public Sans (tekst).
 - Nu PREVIEW op https://michaelbeset-ops.github.io/afvalmeldpunt/ (noindex, robots.txt Disallow),
   omdat er nog [[AANLEVEREN]] in staat. Links via src/lib/pad.ts zodat de submap werkt.
 - Definitief: env-blok in de workflow weghalen, public/CNAME met afvalmeldpunt.nl, DNS zetten.
+
+## Ronde "echt systeem" (12-10-2026)
+- Bedrijfsgegevens in src/lib/bedrijf.ts (Sitefront, info@sitefront.nl, KvK nog invullen, Web3Forms-key).
+- Meldflow: iPhone met camera + gele iOS-link, Safari met meldpagina (container al bekend, "vandaag al gemeld",
+  foto, opmerking, mail bij oplossing), bevestiging met meldnummer. Verstuurde melding komt live in het dashboard.
+- Dashboard: webapp-venster met zijbalk, kerncijfers, tabs, meldingentabel, detail met tijdlijn en statusknoppen.
+- /contact (formulier; zonder Web3Forms-key opent een kant-en-klare mail), /inloggen (werkt niet, noindex).
+- Technische gegevens (sensor, maten plaatje) weggehaald. FAQ op home.
+- SEO/AI: JSON-LD WebSite + Organization + WebPage + Service + FAQPage, llms.txt, robots.txt met AI-crawlers.
+- Productclaims om te checken: statussen, meldnummer, mail bij oplossing, "al gemeld", privacy over meldingen.

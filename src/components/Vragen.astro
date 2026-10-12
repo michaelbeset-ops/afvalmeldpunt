@@ -1,0 +1,26 @@
+---
+import { VRAGEN } from '../lib/vragen';
+---
+<section id="vragen" class="bg-papier py-20 sm:py-28" aria-labelledby="vragen-kop">
+  <div class="mx-auto grid max-w-[90rem] gap-10 px-4 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-16">
+    <h2 id="vragen-kop" class="max-w-[10ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] lg:col-span-4">Veelgestelde vragen</h2>
+    <div class="border-t-2 border-inkt lg:col-span-7 lg:col-start-6">
+      {VRAGEN.map(([vraag, antwoord]) => (
+        <details class="vraag border-b border-inkt/20">
+          <summary class="flex cursor-pointer items-center justify-between gap-6 py-5 font-display text-[1.25rem] leading-snug font-extrabold tracking-[-0.02em] text-inkt sm:text-[1.375rem]">
+            <h3 class="text-[inherit]">{vraag}</h3>
+            <svg class="plus h-5 w-5 shrink-0 text-bos transition-transform duration-200" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14" stroke="currentColor" stroke-width="2.2" fill="none" /></svg>
+          </summary>
+          <p class="max-w-[38rem] pb-6 text-lg">{antwoord}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .vraag summary { list-style: none; }
+  .vraag summary::-webkit-details-marker { display: none; }
+  .vraag[open] .plus { transform: rotate(45deg); }
+  .vraag summary:hover h3 { color: var(--color-bos); }
+</style>

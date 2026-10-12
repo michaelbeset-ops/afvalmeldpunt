@@ -1,7 +1,7 @@
 ---
 // Vulgraadsensor (optie), getekend in dezelfde doorsnede-stijl als de hero: een kastje
 // bovenin de bak, een meetbundel naar het afval, een "bijna vol"-lijn en de melding die
-// eruit volgt. Bewust zonder technische specificaties: die zijn nog niet aangeleverd.
+// eruit volgt. Bewust zonder technische specificaties.
 import { zuil, put } from '../lib/tekening';
 import Plaatje from './Plaatje.astro';
 
@@ -15,8 +15,7 @@ const p = 'sn-'; // eigen verloop-id's naast die van de hero
       <h2 id="sensor-kop" class="max-w-[13ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)]">Melding voordat hij vol is</h2>
       <p class="mt-6 max-w-[30rem] text-lg">Als optie leveren we een vulgraadsensor in de container. Die geeft een melding als de container bijna vol is.</p>
       <p class="mt-4 max-w-[30rem] text-lg">Dan kan hij geleegd worden voordat er afval naast komt te staan. Zo helpt de sensor bijplaatsing voorkomen.</p>
-      <p class="mt-8 max-w-[30rem] border-l-[3px] border-fris pl-5 text-base">In het voorbeelddashboard hieronder staat zo'n sensormelding naast de meldingen van bewoners.</p>
-      <p class="mt-6 text-sm text-tekst-2">Technische gegevens: [[AANLEVEREN: technische gegevens vulgraadsensor]]</p>
+      <p class="mt-8 max-w-[30rem] border-l-[3px] border-fris pl-5 text-base">In het dashboard staat een sensormelding gewoon tussen de meldingen van bewoners, bij dezelfde container.</p>
     </div>
 
     <div class="lg:col-span-6 lg:col-start-7">
@@ -77,7 +76,7 @@ const p = 'sn-'; // eigen verloop-id's naast die van de hero
           <path d="M16 31a8 8 0 0 1 16 0M24 31l4.5-5" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" />
           <circle cx="24" cy="31" r="1.7" fill="#ffffff" />
           <text x="46" y="24" font-family="var(--font-display)" font-size="14" font-weight="800" fill="#142019">Melding: bijna vol</text>
-          <text x="46" y="41" font-family="var(--font-body)" font-size="11.5" fill="#5a6a61">Container 0123 (voorbeeld)</text>
+          <text x="46" y="41" font-family="var(--font-body)" font-size="11.5" fill="#5a6a61">Container 0123, Kerkstraat 12</text>
         </g>
       </svg>
     </div>
