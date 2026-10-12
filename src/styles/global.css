@@ -29,7 +29,7 @@
   --color-alu-licht: #e3e6e9;
   --color-wit: #ffffff;
 
-  --font-display: "Schibsted Grotesk Variable", "Arial Narrow", sans-serif;
+  --font-display: "Schibsted Grotesk Variable", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Public Sans Variable", system-ui, sans-serif;
 
   --text-xs: 0.8125rem;
