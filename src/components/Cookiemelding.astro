@@ -17,7 +17,7 @@ const heeftKeuze = optioneel.length > 0;
   aria-labelledby="cookiemelding-kop"
   data-categorieen={optioneel.map((c) => c.id).join(',')}
 >
-  <p id="cookiemelding-kop" class="font-display text-base font-extrabold tracking-[-0.02em] text-inkt">Cookies</p>
+  <p id="cookiemelding-kop" class="font-display text-base font-bold tracking-[-0.015em] text-inkt">Cookies</p>
   {heeftKeuze ? (
     <p class="mt-2">We gebruiken een functioneel cookie om uw keuze te onthouden. Andere cookies plaatsen we alleen als u daar ja op zegt.</p>
   ) : (
