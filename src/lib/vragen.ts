@@ -5,7 +5,7 @@ export const VRAGEN: [string, string][] = [
   ['Heeft een bewoner een app of account nodig?', 'Nee. De bewoner scant de QR-code met de camera van de telefoon en komt direct op de meldpagina van die container. Melden gaat in de browser, zonder app, account of inloggen.'],
   ['Hoe weet het systeem om welke container het gaat?', 'Elke container heeft een eigen QR-code en nummer. Daardoor komt een melding altijd bij de juiste container terecht en hoeft de bewoner geen adres in te vullen.'],
   ['Wat kunnen bewoners melden?', 'Een volle container, bijgeplaatst afval, een defecte of kapotte container, en stank, ongedierte of iets anders. Een foto en een korte opmerking toevoegen kan, maar hoeft niet.'],
-  ['Wat ziet de beheerder in het dashboard?', 'Per container alle meldingen, met soort, tijdstip, foto en opmerking. Meldingen krijgen een status, van nieuw tot opgelost, zodat zichtbaar is wat er nog openstaat.'],
+  ['Wat ziet de beheerder in het dashboard?', 'Per container alle meldingen, met soort, tijdstip, foto en opmerking. Meldingen krijgen een status, van open via in behandeling tot afgehandeld, zodat zichtbaar is wat er nog openstaat.'],
   ['Wat doet de vulgraadsensor?', 'De vulgraadsensor is een optie. Hij geeft een melding als de container bijna vol is, zodat hij geleegd kan worden voordat er afval naast komt te staan. Die melding staat in hetzelfde dashboard als de meldingen van bewoners.'],
   ['Voor wie is afvalmeldpunt?', 'Voor gemeenten, afvalinzamelaars en woningcorporaties die ondergrondse containers beheren en meldingen van bewoners per container willen ontvangen.'],
   ['Hoe vraag ik een demo aan?', 'Via de contactpagina op afvalmeldpunt.nl of per mail naar info@sitefront.nl. We nemen contact met u op om de demo te plannen.'],
