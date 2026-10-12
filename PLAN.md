@@ -80,3 +80,9 @@ Fonts: Schibsted Grotesk 800 (koppen), Public Sans (tekst).
   apple-touch-icon, 404-pagina (noindex, niet in sitemap), interne links naar /privacy/ (geen redirect).
 - Lighthouse mobiel: / en /privacy/ 100/100/100/100.
 - Nieuw aan te leveren: [[AANLEVEREN: vestigingsadres]] voor de privacyverklaring.
+
+## Live zetten (12-10-2026)
+- .github/workflows/deploy.yml bouwt en publiceert bij elke push naar main.
+- Nu PREVIEW op https://michaelbeset-ops.github.io/afvalmeldpunt/ (noindex, robots.txt Disallow),
+  omdat er nog [[AANLEVEREN]] in staat. Links via src/lib/pad.ts zodat de submap werkt.
+- Definitief: env-blok in de workflow weghalen, public/CNAME met afvalmeldpunt.nl, DNS zetten.

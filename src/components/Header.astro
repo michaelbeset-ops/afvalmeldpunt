@@ -1,17 +1,18 @@
 ---
+import { pad } from '../lib/pad';
 import Logo from './Logo.astro';
 ---
 <header class="relative z-10">
   <div class="mx-auto flex max-w-[90rem] items-center justify-between gap-3 px-4 py-4 sm:px-8 lg:px-16 lg:py-5">
-    <a href="/" class="-m-1 shrink-0 p-1" aria-label="afvalmeldpunt, naar de startpagina">
+    <a href={pad("/")} class="-m-1 shrink-0 p-1" aria-label="afvalmeldpunt, naar de startpagina">
       <Logo class="h-6 w-auto min-[360px]:h-7 sm:h-[2.1rem]" />
     </a>
     <nav aria-label="Hoofdmenu" class="flex items-center gap-4 sm:gap-8">
       <!-- Bewoners komen vooral op de telefoon binnen: hun link staat daarom ook mobiel in beeld. -->
-      <a href="/#melden" class="py-2 text-sm font-semibold text-inkt underline-offset-4 transition-colors hover:text-bos hover:underline">
+      <a href={pad("/#melden")} class="py-2 text-sm font-semibold text-inkt underline-offset-4 transition-colors hover:text-bos hover:underline">
         <span class="min-[360px]:hidden">Melden</span><span class="hidden min-[360px]:inline sm:hidden">Iets melden</span><span class="hidden sm:inline">Voor bewoners</span>
       </a>
-      <a href="/#demo" class="rounded-md border border-inkt/80 px-3.5 py-2 text-sm font-semibold text-inkt transition-colors duration-200 hover:border-bos hover:bg-bos hover:text-wit sm:px-4">
+      <a href={pad("/#demo")} class="rounded-md border border-inkt/80 px-3.5 py-2 text-sm font-semibold text-inkt transition-colors duration-200 hover:border-bos hover:bg-bos hover:text-wit sm:px-4">
         <span class="sm:hidden">Demo</span><span class="hidden sm:inline">Demo aanvragen</span>
       </a>
     </nav>

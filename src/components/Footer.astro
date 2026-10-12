@@ -1,4 +1,5 @@
 ---
+import { pad } from '../lib/pad';
 import Logo from './Logo.astro';
 ---
 <footer class="bg-inkt py-14 text-op-donker sm:py-16">
@@ -9,11 +10,11 @@ import Logo from './Logo.astro';
     </div>
     <nav aria-label="Voettekst" class="lg:col-span-3">
       <ul class="grid gap-2.5">
-        <li><a class="hover:text-wit hover:underline" href="/#hoe-het-werkt">Hoe het werkt</a></li>
-        <li><a class="hover:text-wit hover:underline" href="/#melden">Voor bewoners</a></li>
-        <li><a class="hover:text-wit hover:underline" href="/#demo">Demo aanvragen</a></li>
-        <li><a class="hover:text-wit hover:underline" href="/privacy/">Privacyverklaring</a></li>
-        <li><a class="hover:text-wit hover:underline" href="/privacy/#cookie-instellingen">Cookie-instellingen</a></li>
+        <li><a class="hover:text-wit hover:underline" href={pad("/#hoe-het-werkt")}>Hoe het werkt</a></li>
+        <li><a class="hover:text-wit hover:underline" href={pad("/#melden")}>Voor bewoners</a></li>
+        <li><a class="hover:text-wit hover:underline" href={pad("/#demo")}>Demo aanvragen</a></li>
+        <li><a class="hover:text-wit hover:underline" href={pad("/privacy/")}>Privacyverklaring</a></li>
+        <li><a class="hover:text-wit hover:underline" href={pad("/privacy/#cookie-instellingen")}>Cookie-instellingen</a></li>
       </ul>
     </nav>
     <div class="lg:col-span-4">
