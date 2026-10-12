@@ -79,7 +79,7 @@ Fonts: Schibsted Grotesk 800 (koppen), Public Sans (tekst).
 - SEO: JSON-LD (WebSite + WebPage, alleen vaststaande gegevens), og:site_name, og:image:alt, twitter-tags,
   apple-touch-icon, 404-pagina (noindex, niet in sitemap), interne links naar /privacy/ (geen redirect).
 - Lighthouse mobiel: / en /privacy/ 100/100/100/100.
-- Nieuw aan te leveren: [[AANLEVEREN: vestigingsadres]] voor de privacyverklaring.
+- KvK 42057398 ingevuld (12-10-2026). Live op afvalmeldpunt.nl, preview-env uit de workflow gehaald.
 
 ## Live zetten (12-10-2026)
 - .github/workflows/deploy.yml bouwt en publiceert bij elke push naar main.
