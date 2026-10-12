@@ -5,6 +5,7 @@ import HoeHetWerkt from '../components/HoeHetWerkt.astro';
 import Meldflow from '../components/Meldflow.astro';
 import Dashboard from '../components/Dashboard.astro';
 import Sensor from '../components/Sensor.astro';
+import Inzicht from '../components/Inzicht.astro';
 import VoorWie from '../components/VoorWie.astro';
 import PlaatjeSectie from '../components/PlaatjeSectie.astro';
 import Bewoners from '../components/Bewoners.astro';
@@ -21,7 +22,7 @@ const jsonld = [
     '@id': url + '#dienst',
     name: 'afvalmeldpunt',
     serviceType: 'Meldsysteem voor ondergrondse afvalcontainers',
-    description: 'Een aluminium plaatje met eigen QR-code op elke ondergrondse afvalcontainer. Bewoners scannen de code en melden zonder app of account wat er mis is: container vol, bijgeplaatst afval, defect, stank of ongedierte. De beheerder ziet alle meldingen per container in een online dashboard. Optioneel met vulgraadsensor.',
+    description: 'Een aluminium plaatje met eigen QR-code op elke ondergrondse afvalcontainer. Bewoners scannen de code en melden zonder app of account wat er mis is: container vol, bijgeplaatst afval, defect, stank of ongedierte. De beheerder ziet alle meldingen per container in een online dashboard, zodat zichtbaar wordt waar bijplaatsing en sluikstort steeds terugkomen. Optioneel met vulgraadsensor.',
     provider: { '@id': url + '#organisatie' },
     areaServed: { '@type': 'Country', name: 'Nederland' },
     audience: { '@type': 'Audience', audienceType: 'Gemeenten, afvalinzamelaars en woningcorporaties' },
@@ -45,6 +46,7 @@ const jsonld = [
     <Meldflow />
     <Sensor />
     <Dashboard />
+    <Inzicht />
     <VoorWie />
     <PlaatjeSectie />
     <Bewoners />

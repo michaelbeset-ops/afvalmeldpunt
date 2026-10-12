@@ -1,0 +1,80 @@
+---
+// Van losse meldingen naar inzicht. Omdat elke melding aan een vaste container hangt, met
+// tijdstip, ontstaat vanzelf een geschiedenis per container. Het strookje rechts is een
+// voorbeeld (geen echte gegevens): één container valt op omdat hij week na week terugkomt.
+const weken = 8;
+const strook = [
+  { nr: '0123', plek: 'Kerkstraat', meldingen: [1, 2, 3, 5, 6, 7, 8], valtOp: true },
+  { nr: '0187', plek: 'Stationsplein', meldingen: [4] },
+  { nr: '0210', plek: 'Molenweg', meldingen: [2, 7] },
+  { nr: '0124', plek: 'Kerkstraat', meldingen: [] },
+];
+const punten = [
+  { kop: 'Waar het terugkomt', tekst: 'Containers die steeds opnieuw gemeld worden, springen eruit. Zo ziet u welke plekken structureel aandacht nodig hebben, en welke niet.' },
+  { kop: 'Wanneer het gebeurt', tekst: 'Elke melding heeft een tijdstip. Komt bijplaatsing vooral na het weekend of rond de feestdagen? Dat ziet u terug in de meldingen.' },
+  { kop: 'Wat er helpt', tekst: 'Vaker legen, een vulgraadsensor, extra toezicht of een brief aan de buurt. Daarna ziet u of de meldingen bij die container afnemen.' },
+];
+---
+<section id="inzicht" class="bg-papier-2 py-20 sm:py-28" aria-labelledby="inzicht-kop">
+  <div class="mx-auto max-w-[90rem] px-4 sm:px-8 lg:px-16">
+    <div class="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-6">
+        <h2 id="inzicht-kop" class="max-w-[15ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)]">Eén melding is een incident. Steeds dezelfde container is een patroon.</h2>
+        <p class="mt-6 max-w-[32rem] text-lg">Bijplaatsing wordt opgeruimd en de melding is klaar. Maar staat er een week later weer afval naast dezelfde container, dan is het geen toeval meer.</p>
+        <p class="mt-4 max-w-[32rem] text-lg">Elke melding hoort bij een vaste container, met tijdstip en vaak een foto. Zo bouwt u per container een geschiedenis op. Bewoners en sensoren melden het zelf, elke dag.</p>
+      </div>
+
+      <figure class="lg:col-span-5 lg:col-start-8">
+        <div class="strook rounded-md border border-inkt/15 bg-wit p-4 sm:p-6" role="img" aria-label="Voorbeeld: meldingen per container over acht weken. Container 0123 aan de Kerkstraat wordt zeven van de acht weken gemeld en valt daardoor op. De andere containers worden hooguit een of twee keer gemeld.">
+          <div class="rij kopregel" aria-hidden="true">
+            <span class="text-xs font-semibold text-tekst-2">Container</span>
+            <span class="weken text-xs font-semibold text-tekst-2">Meldingen per week</span>
+          </div>
+          {strook.map((c) => (
+            <div class={`rij ${c.valtOp ? 'valt-op' : ''}`} aria-hidden="true">
+              <span class="leading-tight">
+                <span class="block font-display font-extrabold text-inkt">{c.nr}</span>
+                <span class="block text-xs text-tekst-2">{c.plek}</span>
+              </span>
+              <span class="weken">
+                {Array.from({ length: weken }, (_, i) => (
+                  <span class={`vak ${c.meldingen.includes(i + 1) ? 'aan' : ''}`}></span>
+                ))}
+              </span>
+            </div>
+          ))}
+          <div class="rij voet" aria-hidden="true">
+            <span></span>
+            <span class="weken flex justify-between text-xs text-tekst-2"><span>8 weken geleden</span><span>nu</span></span>
+          </div>
+          <p class="mt-4 flex items-center gap-2 border-t border-inkt/10 pt-4 text-sm text-inkt" aria-hidden="true">
+            <span class="label">Keert terug</span> Container 0123: 7 van de 8 weken gemeld
+          </p>
+        </div>
+        <figcaption class="mt-3 text-sm text-tekst-2">Voorbeeld met demogegevens.</figcaption>
+      </figure>
+    </div>
+
+    <ul class="mt-14 grid gap-px overflow-hidden rounded-md border border-inkt/15 bg-inkt/15 sm:mt-20 md:grid-cols-3">
+      {punten.map((p, i) => (
+        <li class="bg-papier p-6 sm:p-8">
+          <span class="font-display text-sm font-extrabold text-bos">0{i + 1}</span>
+          <h3 class="mt-2 text-[1.5rem] sm:text-[1.75rem]">{p.kop}</h3>
+          <p class="mt-3 text-base sm:text-lg">{p.tekst}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .rij { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); align-items: center; gap: 0.75rem; padding: 0.6rem 0.5rem; border-radius: 6px; }
+  .kopregel, .voet { padding-block: 0.25rem; }
+  .weken { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 0.35rem; }
+  .voet .weken, .kopregel .weken { display: flex; }
+  .vak { aspect-ratio: 1; max-height: 1.75rem; border-radius: 4px; background: var(--color-papier-2); border: 1px solid var(--color-lijn); }
+  .vak.aan { background: var(--color-fris-licht); border-color: transparent; }
+  .valt-op { background: #fdf3ec; }
+  .valt-op .vak.aan { background: #c2410c; }
+  .label { flex: none; white-space: nowrap; padding: 0.15rem 0.5rem; border-radius: 999px; background: #fdf3ec; color: #9a3412; font-weight: 700; font-size: 0.75rem; }
+</style>
