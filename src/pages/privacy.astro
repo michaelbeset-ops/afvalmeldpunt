@@ -1,62 +1,71 @@
 ---
+import { BEDRIJF } from '../lib/bedrijf';
 import Basis from '../layouts/Basis.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
 const hoofdstukken = [
   ['verantwoordelijke', 'Wie is verantwoordelijk'],
-  ['gegevens', 'Welke gegevens'],
-  ['doel', 'Waarvoor en op welke grond'],
+  ['website', 'Gegevens via deze website'],
+  ['meldingen', 'Meldingen van bewoners'],
   ['ontvangers', 'Wie de gegevens ziet'],
   ['bewaren', 'Hoe lang we bewaren'],
   ['beveiliging', 'Beveiliging'],
   ['cookies', 'Cookies'],
-  ['meldingen', 'Meldingen van bewoners'],
   ['rechten', 'Uw rechten'],
   ['wijzigingen', 'Wijzigingen'],
 ];
+const mail = `<a href="mailto:${BEDRIJF.email}">${BEDRIJF.email}</a>`;
 ---
-<Basis titel="Privacyverklaring | afvalmeldpunt" omschrijving="Hoe afvalmeldpunt.nl omgaat met de gegevens uit het demoformulier, welke cookies de site gebruikt en welke rechten u heeft.">
+<Basis titel="Privacyverklaring | afvalmeldpunt" omschrijving="Hoe afvalmeldpunt omgaat met gegevens van demo-aanvragen en meldingen van bewoners, welke cookies de site gebruikt en welke rechten u heeft.">
   <Header />
   <main id="hoofdinhoud" class="mx-auto max-w-[90rem] px-4 pt-10 pb-24 sm:px-8 sm:pt-16 lg:px-16">
     <div class="lg:grid lg:grid-cols-12 lg:gap-8">
       <article class="privacy max-w-[42rem] lg:col-span-7">
         <h1 class="text-[clamp(2rem,1.4rem+3vw,3.75rem)]">Privacyverklaring</h1>
-        <p class="mt-4 text-sm text-tekst-2">Laatst bijgewerkt: 11 oktober 2026</p>
-        <p class="intro">Deze verklaring gaat over de website afvalmeldpunt.nl. Kort gezegd: we vragen alleen gegevens als u zelf een demo aanvraagt, we volgen u niet en we verkopen niets door.</p>
+        <p class="mt-4 text-sm text-tekst-2">Laatst bijgewerkt: 12 oktober 2026</p>
+        <p class="intro">Deze verklaring gaat over de website afvalmeldpunt.nl en over de meldpagina die bewoners openen als ze de QR-code op een container scannen. Kort gezegd: we vragen zo min mogelijk, we volgen niemand en we verkopen niets door.</p>
 
         <h2 id="verantwoordelijke">Wie is verantwoordelijk</h2>
-        <p>[[AANLEVEREN: bedrijfsnaam]], KvK [[AANLEVEREN: KvK-nummer]], [[AANLEVEREN: vestigingsadres]], is verantwoordelijk voor de verwerking van uw gegevens via deze website. Vragen over privacy kunt u mailen naar [[AANLEVEREN: e-mailadres voor demo-aanvragen]].</p>
-
-        <h2 id="gegevens">Welke gegevens we verwerken</h2>
-        <p>Alleen wat u zelf invult in het formulier voor een demo-aanvraag:</p>
+        <p>afvalmeldpunt is een product van {BEDRIJF.naam}, KvK {BEDRIJF.kvk}. Vragen over privacy kunt u mailen naar <Fragment set:html={mail} />.</p>
         <ul>
-          <li>naam en organisatie</li>
-          <li>e-mailadres</li>
-          <li>telefoonnummer en bericht, als u die invult</li>
+          <li>Voor deze website en het demoformulier is {BEDRIJF.naam} de verwerkingsverantwoordelijke.</li>
+          <li>Voor meldingen van bewoners is de organisatie die de containers beheert verantwoordelijk, bijvoorbeeld uw gemeente. {BEDRIJF.naam} verwerkt die meldingen in opdracht van die organisatie, op basis van een verwerkersovereenkomst.</li>
         </ul>
-        <p>Daarnaast ziet onze hostingpartij technische gegevens die elke website ontvangt, zoals uw IP-adres en het type browser. Die gebruiken wij niet.</p>
 
-        <h2 id="doel">Waarvoor en op welke grond</h2>
-        <p>We gebruiken uw gegevens alleen om contact met u op te nemen over uw aanvraag en u een demo te geven. De grond daarvoor is dat u ons er zelf om vraagt: het is nodig om op uw verzoek een overeenkomst voor te bereiden (artikel 6 lid 1 sub b AVG). We gebruiken uw gegevens niet voor nieuwsbrieven of reclame en verkopen ze aan niemand.</p>
+        <h2 id="website">Gegevens via deze website</h2>
+        <p>Vraagt u een demo aan, dan verwerken we wat u zelf invult: naam, organisatie, e-mailadres, en als u die invult ook uw telefoonnummer en bericht. We gebruiken dit alleen om contact met u op te nemen over uw aanvraag. De grond daarvoor is dat u ons er zelf om vraagt (artikel 6 lid 1 sub b AVG). We sturen u geen nieuwsbrief en gebruiken uw gegevens niet voor reclame.</p>
+        <p>Het inlogscherm is alleen voor beheerders van organisaties die afvalmeldpunt gebruiken.</p>
+
+        <h2 id="meldingen">Meldingen van bewoners</h2>
+        <p>Een bewoner heeft geen app en geen account nodig. Bij een melding slaan we op:</p>
+        <ul>
+          <li>het nummer van de container (dat zit in de QR-code)</li>
+          <li>wat er aan de hand is, en het tijdstip van de melding</li>
+          <li>een foto en een opmerking, alleen als de bewoner die zelf toevoegt</li>
+          <li>een e-mailadres, alleen als de bewoner bericht wil krijgen als de melding is afgehandeld</li>
+        </ul>
+        <p>We vragen geen naam, adres of telefoonnummer en we slaan geen locatie van de telefoon op: de plek volgt uit de container. Zet daarom geen mensen of kentekens herkenbaar op een foto. De beheerder gebruikt de melding alleen om het probleem bij de container op te lossen.</p>
 
         <h2 id="ontvangers">Wie de gegevens ziet</h2>
-        <p>Wij schakelen twee partijen in die gegevens voor ons verwerken:</p>
+        <p>Meldingen zijn alleen te zien voor de beheerders van de organisatie waar de container bij hoort. Verder schakelen we deze partijen in:</p>
         <ul>
-          <li><strong>Web3Forms</strong> verstuurt het formulier als e-mail naar ons.</li>
-          <li><strong>GitHub</strong> (GitHub Pages) host de website en verwerkt daarbij technische gegevens, zoals IP-adressen, voor de beveiliging.</li>
+          <li><strong>Web3Forms</strong> verstuurt het demoformulier als e-mail naar ons.</li>
+          <li><strong>GitHub</strong> (GitHub Pages) host deze website en verwerkt daarbij technische gegevens, zoals IP-adressen, voor de beveiliging.</li>
         </ul>
-        <p>Deze diensten kunnen gegevens buiten de Europese Unie verwerken, onder meer in de Verenigde Staten. Dat gebeurt op basis van de waarborgen die de AVG daarvoor kent, zoals het EU-VS-gegevensprivacykader of standaardcontractbepalingen van de Europese Commissie. Verder delen we uw gegevens alleen als de wet ons daartoe verplicht.</p>
+        <p>Deze diensten kunnen gegevens buiten de Europese Unie verwerken, onder meer in de Verenigde Staten. Dat gebeurt op basis van de waarborgen die de AVG daarvoor kent, zoals het EU-VS-gegevensprivacykader of standaardcontractbepalingen van de Europese Commissie. Verder delen we gegevens alleen als de wet ons daartoe verplicht.</p>
 
-        <h2 id="bewaren">Hoe lang we gegevens bewaren</h2>
-        <p>[[AANLEVEREN: bewaartermijn van demo-aanvragen]]</p>
+        <h2 id="bewaren">Hoe lang we bewaren</h2>
+        <ul>
+          <li>Demo-aanvragen: tot twaalf maanden na ons laatste contact, tenzij er een overeenkomst uit volgt.</li>
+          <li>Meldingen van bewoners: zolang de organisatie die de containers beheert dat met ons heeft afgesproken. Een e-mailadres voor een bericht verwijderen we zodra de melding is afgehandeld.</li>
+        </ul>
 
         <h2 id="beveiliging">Beveiliging</h2>
-        <p>De website draait alleen via een beveiligde verbinding (https). Het formulier gaat versleuteld naar Web3Forms.</p>
+        <p>Website en meldpagina werken alleen via een beveiligde verbinding (https). Het dashboard is alleen te openen met een persoonlijk account. Toegang geven we per organisatie, alleen aan de mensen die de meldingen afhandelen.</p>
 
         <h2 id="cookies">Cookies</h2>
-        <p>Deze website gebruikt geen statistieken, geen advertentiecookies en geen trackers. De lettertypes staan op onze eigen server, er gaan geen verzoeken naar Google of andere partijen.</p>
-        <p>We plaatsen één functioneel cookie:</p>
+        <p>Deze website gebruikt geen statistieken, geen advertentiecookies en geen trackers. De lettertypes staan op onze eigen server, er gaan geen verzoeken naar Google of andere partijen. We plaatsen één functioneel cookie:</p>
         <div class="tabel-scroll">
           <table>
             <thead><tr><th scope="col">Naam</th><th scope="col">Waarvoor</th><th scope="col">Bewaartermijn</th></tr></thead>
@@ -65,11 +74,8 @@ const hoofdstukken = [
         </div>
         <p>Voor een functioneel cookie is geen toestemming nodig. U kunt het altijd verwijderen via de instellingen van uw browser. <a id="cookie-instellingen" href="#cookie-instellingen">Cookiemelding opnieuw tonen</a>.</p>
 
-        <h2 id="meldingen">Meldingen van bewoners</h2>
-        <p>Deze verklaring gaat over de website afvalmeldpunt.nl. Voor meldingen die bewoners via de QR-code op een container doen: [[AANLEVEREN: privacyverklaring van het meldsysteem, of een link ernaar]].</p>
-
         <h2 id="rechten">Uw rechten</h2>
-        <p>U mag ons vragen om uw gegevens in te zien, te verbeteren, te verwijderen of over te dragen. U kunt ook bezwaar maken tegen het gebruik ervan of vragen het te beperken. Mail daarvoor naar [[AANLEVEREN: e-mailadres voor demo-aanvragen]]. We reageren binnen een maand.</p>
+        <p>U mag ons vragen om uw gegevens in te zien, te verbeteren, te verwijderen of over te dragen. U kunt ook bezwaar maken tegen het gebruik ervan of vragen het te beperken. Mail daarvoor naar <Fragment set:html={mail} />. We reageren binnen een maand. Gaat het om een melding, dan stemmen we uw verzoek af met de organisatie die de container beheert.</p>
         <p>Bent u het niet eens met hoe we met uw gegevens omgaan, laat het ons dan eerst weten. U heeft ook het recht een klacht in te dienen bij de <a href="https://autoriteitpersoonsgegevens.nl" rel="noopener">Autoriteit Persoonsgegevens</a>.</p>
 
         <h2 id="wijzigingen">Wijzigingen</h2>
@@ -94,10 +100,10 @@ const hoofdstukken = [
   .privacy h2 { margin-top: 2.75rem; font-size: 1.5rem; scroll-margin-top: 1.5rem; }
   .privacy p, .privacy ul, .tabel-scroll { margin-top: 0.75rem; }
   .privacy ul { padding-left: 1.25rem; list-style: square; }
-  .privacy li { margin-top: 0.25rem; }
+  .privacy li { margin-top: 0.35rem; }
   .privacy li::marker { color: var(--color-bos); }
   .privacy strong { color: var(--color-inkt); }
-  .privacy a { color: var(--color-bos); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+  .privacy :global(a) { color: var(--color-bos); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
   .tabel-scroll { overflow-x: auto; }
   .privacy table { width: 100%; min-width: 30rem; border-collapse: collapse; font-size: var(--text-sm); }
   .privacy th, .privacy td { text-align: left; vertical-align: top; padding: 0.6rem 0.75rem 0.6rem 0; border-bottom: 1px solid var(--color-lijn); }

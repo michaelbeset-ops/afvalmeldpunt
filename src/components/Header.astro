@@ -7,12 +7,16 @@ import Logo from './Logo.astro';
     <a href={pad("/")} class="-m-1 shrink-0 p-1" aria-label="afvalmeldpunt, naar de startpagina">
       <Logo class="h-6 w-auto min-[360px]:h-7 sm:h-[2.1rem]" />
     </a>
-    <nav aria-label="Hoofdmenu" class="flex items-center gap-4 sm:gap-8">
+    <nav aria-label="Hoofdmenu" class="flex items-center gap-3.5 sm:gap-7">
       <!-- Bewoners komen vooral op de telefoon binnen: hun link staat daarom ook mobiel in beeld. -->
-      <a href={pad("/#melden")} class="py-2 text-sm font-semibold text-inkt underline-offset-4 transition-colors hover:text-bos hover:underline">
-        <span class="min-[360px]:hidden">Melden</span><span class="hidden min-[360px]:inline sm:hidden">Iets melden</span><span class="hidden sm:inline">Voor bewoners</span>
+      <a href={pad("/#melden")} class="hidden py-2 text-sm font-semibold text-inkt underline-offset-4 transition-colors hover:text-bos hover:underline min-[400px]:inline">
+        <span class="sm:hidden">Melden</span><span class="hidden sm:inline">Voor bewoners</span>
       </a>
-      <a href={pad("/#demo")} class="rounded-md border border-inkt/80 px-3.5 py-2 text-sm font-semibold text-inkt transition-colors duration-200 hover:border-bos hover:bg-bos hover:text-wit sm:px-4">
+      <a href={pad("/inloggen/")} class="inline-flex items-center gap-1.5 py-2 text-sm font-semibold text-inkt underline-offset-4 transition-colors hover:text-bos hover:underline">
+        <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="8" cy="5.5" r="2.75" /><path d="M2.75 14c.6-2.7 2.6-4 5.25-4s4.65 1.3 5.25 4" /></svg>
+        <span class="sr-only min-[360px]:not-sr-only">Inloggen</span>
+      </a>
+      <a href={pad("/contact/")} class="rounded-md border border-inkt/80 px-3.5 py-2 text-sm font-semibold text-inkt transition-colors duration-200 hover:border-bos hover:bg-bos hover:text-wit sm:px-4">
         <span class="sm:hidden">Demo</span><span class="hidden sm:inline">Demo aanvragen</span>
       </a>
     </nav>

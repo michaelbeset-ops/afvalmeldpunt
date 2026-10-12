@@ -1,154 +1,281 @@
 ---
-// De meldpagina zoals een bewoner hem ziet, nagebouwd en klikbaar. Er wordt niets
-// verstuurd: het script wisselt alleen tussen de schermen.
+// De meldflow zoals hij op een iPhone echt loopt: camera op het plaatje, de gele link van
+// iOS, Safari opent de meldpagina van precies die container, kiezen, foto en opmerking,
+// bevestiging met meldnummer. Er wordt niets verstuurd: het script wisselt schermen en geeft
+// de melding door aan het dashboard verderop (event "afvalmeldpunt:melding").
+import QRCode from 'qrcode';
+import { QR_URL } from '../lib/qr.mjs';
 import Logo from './Logo.astro';
+import Plaatje from './Plaatje.astro';
 import { CATEGORIEEN, icoonSvg } from '../lib/meldingen.mjs';
 
-const stappen = ['Container herkend', 'Kiezen wat er aan de hand is', 'Foto toevoegen, als je wilt', 'Versturen'];
+// Waar de QR op het plaatje zit (viewBox 320 x 464, zie Plaatje.astro), voor het gele kader.
+const n = QRCode.create(QR_URL, { errorCorrectionLevel: 'H' }).modules.size;
+const qr = { x: 46 / 320, y: 178 / 464, w: (n * 5.6) / 320, h: (n * 5.6) / 464 };
+const kader = `left:${(qr.x * 100).toFixed(2)}%;top:${(qr.y * 100).toFixed(2)}%;width:${(qr.w * 100).toFixed(2)}%;height:${(qr.h * 100).toFixed(2)}%`;
+
+const stappen = ['De QR-code scannen', 'Kiezen wat er aan de hand is', 'Foto en opmerking, als je wilt', 'Verstuurd, met een meldnummer'];
+// "Al gemeld" maakt dubbele meldingen zichtbaar, zoals op de echte meldpagina.
+const alGemeld: Record<string, string> = { vol: 'Vandaag al 2 keer gemeld' };
 ---
 <section id="meldflow" class="bg-papier py-20 sm:py-28" aria-labelledby="flow-kop">
   <div class="mx-auto grid max-w-[90rem] items-center gap-14 px-4 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-16">
 
     <div class="order-2 flex justify-center lg:order-1 lg:col-span-5 lg:justify-start">
-      <div class="telefoon" data-scherm="1" role="group" aria-label="Nagebouwde meldpagina, klikbaar voorbeeld">
-        <div class="scherm" aria-live="polite">
-          <div class="balk">
-            <Logo class="h-5 w-auto" />
-            <span class="vb">voorbeeld</span>
+      <div class="iphone" data-scherm="0" role="group" aria-label="Klikbaar voorbeeld van de meldpagina op een telefoon">
+        <div class="scherm">
+          <div class="eiland" aria-hidden="true"></div>
+          <div class="statusbalk" aria-hidden="true">
+            <span>9:41</span>
+            <span class="flex items-center gap-1.5">
+              <svg width="17" height="11" viewBox="0 0 17 11"><rect x="0" y="7" width="3" height="4" rx="0.7" fill="currentColor" /><rect x="4.5" y="5" width="3" height="6" rx="0.7" fill="currentColor" /><rect x="9" y="2.5" width="3" height="8.5" rx="0.7" fill="currentColor" /><rect x="13.5" y="0" width="3" height="11" rx="0.7" fill="currentColor" /></svg>
+              <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 2.2c2.1 0 4 .8 5.4 2.1l1.1-1.1A9.2 9.2 0 0 0 7.5.6 9.2 9.2 0 0 0 1 3.2l1.1 1.1a7.6 7.6 0 0 1 5.4-2.1zm0 3.1c1.2 0 2.3.5 3.2 1.2l1.1-1.1a6.2 6.2 0 0 0-8.6 0l1.1 1.1c.9-.7 2-1.2 3.2-1.2zm0 3.1-1.6 1.6L7.5 11l1.6-1.6z" fill="currentColor" /></svg>
+              <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3" fill="none" stroke="currentColor" stroke-opacity="0.4" /><rect x="2" y="2" width="15" height="8" rx="1.7" fill="currentColor" /><path d="M23 4v4c.8-.3 1.3-1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" fill-opacity="0.4" /></svg>
+            </span>
           </div>
 
-          <!-- 1: container herkend, kies een melding -->
-          <div class="stap" data-stap="1">
-            <p class="text-[0.8125rem] font-semibold text-tekst-2">Container 0123</p>
-            <p class="mt-1 font-display text-[1.375rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Wat is er aan de hand?</p>
-            <div class="mt-4 grid gap-2.5">
-              {CATEGORIEEN.map((c) => (
-                <button type="button" class="keuze" data-keuze={c.naam}>
-                  <span class="ico" set:html={icoonSvg(c.icoon)} />
-                  <span>{c.naam}</span>
-                </button>
-              ))}
+          <!-- 0: camera -->
+          <div class="camera stap" data-stap="0">
+            <div class="zoeker">
+              <div class="zuilvlak" aria-hidden="true"></div>
+              <div class="relative mx-auto w-[64%]">
+                <Plaatje id="camera" class="block h-auto w-full" titel="" schaduw={false} />
+                <span class="qrkader" style={kader} aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              </div>
+              <button type="button" class="qrlink" data-naar="1">
+                <svg class="h-4 w-4" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.4" /><path d="M8 1v14M1 8h14M3 4c3 1.5 7 1.5 10 0M3 12c3-1.5 7-1.5 10 0" fill="none" stroke="currentColor" stroke-width="1.1" /></svg>
+                afvalmeldpunt.nl
+              </button>
             </div>
-            <p class="mt-6 text-center text-[0.8125rem] text-tekst-2">Geen app of account nodig.</p>
-          </div>
-
-          <!-- 2: foto -->
-          <div class="stap" data-stap="2" hidden>
-            <button type="button" class="terug" data-naar="1">Terug</button>
-            <p class="mt-3 font-display text-[1.375rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Foto toevoegen</p>
-            <p class="mt-1 text-sm text-tekst-2">Mag, hoeft niet.</p>
-            <button type="button" class="fotovak mt-4" data-foto>
-              <span class="leeg">
-                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg>
-                Foto maken of kiezen
-              </span>
-              <span class="vol" aria-hidden="true">
-                <svg viewBox="0 0 120 80" class="h-full w-full"><rect width="120" height="80" fill="#cfd8d3" /><rect y="58" width="120" height="22" fill="#9aa59f" /><rect x="40" y="18" width="26" height="44" rx="4" fill="#3a4440" /><rect x="44" y="24" width="16" height="10" rx="2" fill="#c9d0d4" /><rect x="40" y="52" width="26" height="6" fill="#98a1a6" /><path d="M78 62c-6 0-9-3-9-8s4-9 9-11c5 2 9 6 9 11s-3 8-9 8z" fill="#2f3733" /><path d="M93 63c-5 0-7-2-7-6s3-7 7-8c4 1 7 4 7 8s-2 6-7 6z" fill="#59625e" /></svg>
-              </span>
-            </button>
-            <p class="fotostatus mt-2 text-[0.8125rem] text-tekst-2" data-fotostatus>Nog geen foto.</p>
-            <button type="button" class="hoofdknop mt-4" data-naar="3">Verder</button>
-          </div>
-
-          <!-- 3: controleren en versturen -->
-          <div class="stap" data-stap="3" hidden>
-            <button type="button" class="terug" data-naar="2">Terug</button>
-            <p class="mt-3 font-display text-[1.375rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Klopt dit?</p>
-            <dl class="mt-4 grid gap-3 text-sm">
-              <div class="rij"><dt>Container</dt><dd>0123</dd></div>
-              <div class="rij"><dt>Melding</dt><dd data-samen-keuze>-</dd></div>
-              <div class="rij"><dt>Foto</dt><dd data-samen-foto>Nee</dd></div>
-            </dl>
-            <button type="button" class="hoofdknop mt-6" data-naar="4">Melding versturen</button>
-          </div>
-
-          <!-- 4: bevestiging -->
-          <div class="stap text-center" data-stap="4" hidden>
-            <div class="mx-auto mt-10 grid h-16 w-16 place-items-center rounded-full bg-bos text-wit">
-              <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+            <div class="cambalk" aria-hidden="true">
+              <span class="modus">FOTO</span>
+              <span class="sluiter"></span>
             </div>
-            <p class="mt-5 font-display text-[1.375rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Verstuurd, bedankt!</p>
-            <p class="mt-2 text-sm text-tekst">Je melding staat bij container 0123.</p>
-            <button type="button" class="tweedeknop mt-8" data-naar="1" data-opnieuw>Nieuwe melding</button>
           </div>
+
+          <!-- 1 t/m 3: Safari met de meldpagina -->
+          <div class="browser stap" data-stap="1" hidden>
+            <div class="pagina" data-pagina="1">
+              <div class="kop"><Logo class="h-[1.05rem] w-auto" /></div>
+              <div class="containerkaart">
+                <span class="soortband" style="background:#98a1a6"></span>
+                <span>
+                  <span class="block text-[0.6875rem] font-semibold tracking-wide text-tekst-2 uppercase">Restafval</span>
+                  <span class="block font-display text-[1.05rem] font-extrabold tracking-[-0.02em] text-inkt">Container 0123</span>
+                  <span class="block text-[0.75rem] text-tekst-2">Kerkstraat 12</span>
+                </span>
+              </div>
+              <p class="mt-4 font-display text-[1.25rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Wat is er aan de hand?</p>
+              <div class="mt-3 grid gap-2">
+                {CATEGORIEEN.map((c) => (
+                  <button type="button" class="keuze" data-keuze={c.id} data-naam={c.naam}>
+                    <span class="ico" set:html={icoonSvg(c.icoon)} />
+                    <span class="min-w-0 flex-1">
+                      <span class="block">{c.naam}</span>
+                      {alGemeld[c.id] && <span class="algemeld">{alGemeld[c.id]}</span>}
+                    </span>
+                    <svg class="h-3.5 w-3.5 shrink-0 text-tekst-2" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                  </button>
+                ))}
+              </div>
+              <p class="mt-4 text-center text-[0.6875rem] text-tekst-2">Gevaarlijke situatie? Bel 112.</p>
+            </div>
+
+            <div class="pagina" data-pagina="2" hidden>
+              <div class="kop">
+                <button type="button" class="terug" data-naar="1">Terug</button>
+                <span class="text-[0.6875rem] font-semibold text-tekst-2">Container 0123</span>
+              </div>
+              <p class="font-display text-[1.25rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt" data-gekozen>Container vol</p>
+              <p class="mt-0.5 text-[0.75rem] text-tekst-2">Alles hieronder mag, niets hoeft.</p>
+
+              <button type="button" class="fotovak mt-3" data-foto>
+                <span class="leeg">
+                  <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg>
+                  Foto maken
+                </span>
+                <span class="vol" aria-hidden="true">
+                  <svg viewBox="0 0 120 64" class="h-full w-full" preserveAspectRatio="xMidYMid slice"><rect width="120" height="64" fill="#cfd8d3" /><rect y="46" width="120" height="18" fill="#9aa59f" /><rect x="40" y="8" width="24" height="42" rx="4" fill="#3a4440" /><rect x="44" y="14" width="16" height="9" rx="2" fill="#c9d0d4" /><rect x="40" y="42" width="24" height="5" fill="#98a1a6" /><path d="M76 52c-6 0-9-3-9-8s4-9 9-11c5 2 9 6 9 11s-3 8-9 8z" fill="#2f3733" /><path d="M91 53c-5 0-7-2-7-6s3-7 7-8c4 1 7 4 7 8s-2 6-7 6z" fill="#59625e" /></svg>
+                  <span class="wis">Verwijderen</span>
+                </span>
+              </button>
+
+              <label class="mt-3 block text-[0.75rem] font-semibold text-inkt" for="mf-opmerking">Opmerking</label>
+              <textarea id="mf-opmerking" class="invoer mt-1 h-14 resize-none" placeholder="Bijvoorbeeld: zakken naast de container" data-opmerking></textarea>
+
+              <label class="mt-3 flex items-start gap-2 text-[0.75rem] text-inkt">
+                <input type="checkbox" class="mt-0.5 h-3.5 w-3.5 accent-bos" data-bericht />
+                <span>Stuur me een mail als het is opgelost</span>
+              </label>
+              <input type="email" class="invoer mt-2" placeholder="je@mailadres.nl" aria-label="E-mailadres voor bericht" data-mail hidden />
+
+              <button type="button" class="hoofdknop mt-4" data-verstuur>Melding versturen</button>
+            </div>
+
+            <div class="pagina text-center" data-pagina="3" hidden>
+              <div class="kop justify-center"><Logo class="h-[1.05rem] w-auto" /></div>
+              <div class="bezig" data-bezig>
+                <span class="spinner" aria-hidden="true"></span>
+                <p class="mt-3 text-[0.8125rem] text-tekst-2">Versturen...</p>
+              </div>
+              <div data-klaar hidden>
+                <div class="mx-auto mt-5 grid h-14 w-14 place-items-center rounded-full bg-bos text-wit">
+                  <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                </div>
+                <p class="mt-4 font-display text-[1.25rem] leading-tight font-extrabold tracking-[-0.02em] text-inkt">Bedankt, je melding is binnen</p>
+                <p class="mt-1 text-[0.75rem] text-tekst-2">Meldnummer <strong class="text-inkt" data-meldnr>M-24-08113</strong></p>
+                <dl class="samenvatting mt-4 text-left text-[0.75rem]">
+                  <div><dt>Container</dt><dd>0123, restafval</dd></div>
+                  <div><dt>Melding</dt><dd data-samen-keuze>-</dd></div>
+                  <div><dt>Foto</dt><dd data-samen-foto>Nee</dd></div>
+                  <div><dt>Ontvangen</dt><dd>vandaag 09:41</dd></div>
+                </dl>
+                <p class="mt-3 text-[0.75rem] text-tekst" data-samen-bericht>De beheerder van deze container ziet je melding nu.</p>
+                <button type="button" class="tweedeknop mt-4" data-opnieuw>Nog iets melden</button>
+              </div>
+            </div>
+
+            <div class="safari" aria-hidden="true">
+              <div class="adres">
+                <span class="text-[0.6875rem] font-semibold">aA</span>
+                <span class="flex items-center gap-1">
+                  <svg width="8" height="10" viewBox="0 0 8 10"><rect x="0.5" y="4" width="7" height="5.5" rx="1" fill="currentColor" /><path d="M2 4V3a2 2 0 0 1 4 0v1" fill="none" stroke="currentColor" stroke-width="1.2" /></svg>
+                  afvalmeldpunt.nl
+                </span>
+                <svg width="11" height="11" viewBox="0 0 12 12"><path d="M10 6a4 4 0 1 1-1.2-2.9M10 1.5V4H7.5" fill="none" stroke="currentColor" stroke-width="1.3" /></svg>
+              </div>
+              <div class="knoppen">
+                <svg width="10" height="16" viewBox="0 0 10 16"><path d="M8 2 2 8l6 6" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                <svg width="10" height="16" viewBox="0 0 10 16" opacity="0.35"><path d="m2 2 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                <svg width="16" height="18" viewBox="0 0 16 18"><path d="M8 1v10M4.5 4.5 8 1l3.5 3.5M3 7H1.5v10h13V7H13" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+                <svg width="18" height="15" viewBox="0 0 18 15"><path d="M9 3c-2-1.5-5-2-8-1.5V14c3-.5 6 0 8 1.5M9 3c2-1.5 5-2 8-1.5V14c-3-.5-6 0-8 1.5M9 3v12.5" fill="none" stroke="currentColor" stroke-width="1.4" /></svg>
+                <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="4" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" /><path d="M4 1h9a2 2 0 0 1 2 2v9" fill="none" stroke="currentColor" stroke-width="1.4" /></svg>
+              </div>
+            </div>
+          </div>
+          <div class="thuisbalk" aria-hidden="true"></div>
         </div>
       </div>
     </div>
 
     <div class="order-1 lg:order-2 lg:col-span-6 lg:col-start-7">
       <h2 id="flow-kop" class="max-w-[14ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)]">Zo meldt een bewoner</h2>
-      <p class="mt-5 max-w-[30rem] text-lg">Tik zelf door de meldpagina. Dit is een nagebouwd voorbeeld, er wordt niets verstuurd.</p>
-      <ol class="stappenlijst mt-10 grid gap-4">
+      <p class="mt-5 max-w-[30rem] text-lg">Geen app, geen account. De bewoner richt de camera op het plaatje en tikt op de link. De meldpagina weet al om welke container het gaat.</p>
+      <ol class="stappenlijst mt-10 grid gap-1">
         {stappen.map((s, i) => (
-          <li data-lijst={i === 0 ? '1' : i === 3 ? '3' : String(i)} class="flex items-baseline gap-4 text-lg">
+          <li class="flex items-baseline gap-4 py-2 text-lg" data-lijst={i}>
             <span class="nr font-display font-extrabold">{i + 1}</span>
             <span>{s}</span>
           </li>
         ))}
       </ol>
+      <p class="mt-8 max-w-[30rem] text-sm text-tekst-2">Probeer het: tik op de telefoon op de gele link. Verstuur je een melding, dan zie je hem verderop binnenkomen in het dashboard.</p>
     </div>
   </div>
 </section>
 
 <style>
-  .telefoon {
+  .iphone {
     width: min(19.5rem, 100%);
-    aspect-ratio: 9 / 17.5;
-    border-radius: 2.6rem;
-    padding: 0.7rem;
-    background: linear-gradient(145deg, #2c3833, #121a16 55%, #26302b);
-    box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 24px 48px -28px rgb(20 32 25 / 0.55);
+    aspect-ratio: 9 / 19.2;
+    border-radius: 3rem;
+    padding: 0.55rem;
+    background: #1d2420;
+    box-shadow:
+      0 0 0 1.5px #59625e inset,
+      0 0 0 3px #0e1310 inset,
+      0 30px 60px -30px rgb(20 32 25 / 0.6);
   }
   .scherm {
-    height: 100%;
-    border-radius: 2rem;
-    background: var(--color-wit);
-    padding: 1rem 1.15rem 1.25rem;
-    overflow: hidden;
-    position: relative;
+    position: relative; height: 100%; overflow: hidden;
+    border-radius: 2.5rem; background: var(--color-wit);
+    display: flex; flex-direction: column;
+    font-size: 0.8125rem;
   }
-  .balk {
+  .eiland { position: absolute; z-index: 3; top: 0.55rem; left: 50%; width: 5.6rem; height: 1.55rem; transform: translateX(-50%); border-radius: 1rem; background: #000; }
+  .statusbalk {
+    position: absolute; z-index: 2; inset: 0 0 auto; height: 2.65rem;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0.35rem 0 0.9rem; margin-bottom: 1rem;
-    border-bottom: 1px solid var(--color-lijn);
+    padding: 0.3rem 1.55rem 0 1.9rem; font-weight: 600; font-size: 0.875rem; color: var(--color-inkt);
   }
-  .vb {
-    font-size: 0.6875rem; font-weight: 700; color: var(--color-tekst-2);
-    border: 1px solid var(--color-tekst-2); border-radius: 3px; padding: 0 0.3rem;
+  .iphone[data-scherm="0"] .statusbalk { color: #fff; }
+  .thuisbalk { position: absolute; z-index: 3; bottom: 0.4rem; left: 50%; width: 7.5rem; height: 0.3rem; border-radius: 1rem; transform: translateX(-50%); background: var(--color-inkt); }
+  .iphone[data-scherm="0"] .thuisbalk { background: #fff; }
+  .stap { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .stap[hidden] { display: none; }
+
+  /* camera */
+  .camera { background: #000; }
+  .zoeker {
+    position: relative; flex: 1; margin-top: 2.65rem; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: center;
+    background: radial-gradient(120% 80% at 50% 40%, #4c5652, #2a312e 60%, #1a201d);
   }
-  .stap { animation: in 0.28s ease-out; }
-  @keyframes in { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } }
+  .zuilvlak { position: absolute; inset: 6% 8%; border-radius: 1.2rem; background: linear-gradient(90deg, #2e3532, #48514d 30%, #3a4340 70%, #272e2b); }
+  .qrkader { position: absolute; margin: -4%; padding: 4%; box-sizing: content-box; animation: kader 1.6s ease-in-out infinite alternate; }
+  .qrkader i { position: absolute; width: 22%; height: 22%; border: 3px solid #ffd60a; }
+  .qrkader i:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; border-top-left-radius: 6px; }
+  .qrkader i:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; border-top-right-radius: 6px; }
+  .qrkader i:nth-child(3) { bottom: 0; left: 0; border-right: 0; border-top: 0; border-bottom-left-radius: 6px; }
+  .qrkader i:nth-child(4) { bottom: 0; right: 0; border-left: 0; border-top: 0; border-bottom-right-radius: 6px; }
+  @keyframes kader { to { transform: scale(0.96); } }
+  .qrlink {
+    position: absolute; left: 50%; bottom: 9%; transform: translateX(-50%);
+    display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap;
+    padding: 0.45rem 0.85rem; border-radius: 999px; background: #ffd60a; color: #1a1a1a;
+    font-weight: 700; font-size: 0.8125rem; cursor: pointer; box-shadow: 0 4px 14px rgb(0 0 0 / 0.35);
+  }
+  .qrlink:hover { background: #ffe14d; }
+  .cambalk { height: 7rem; padding-bottom: 1.1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem; background: #000; }
+  .modus { color: #ffd60a; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; }
+  .sluiter { width: 3.3rem; height: 3.3rem; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px #000, 0 0 0 5.5px #fff; }
+
+  /* browser */
+  .browser { background: var(--color-papier); }
+  .pagina { flex: 1; min-height: 0; overflow-y: auto; padding: 3rem 0.95rem 0.8rem; scrollbar-width: none; }
+  .pagina[hidden] { display: none; }
+  .kop { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.65rem; margin-bottom: 0.75rem; border-bottom: 1px solid var(--color-lijn); }
+  .containerkaart { display: flex; gap: 0.7rem; padding: 0.6rem 0.7rem; border-radius: 8px; background: var(--color-wit); border: 1px solid var(--color-lijn); }
+  .soortband { width: 0.3rem; border-radius: 999px; flex: none; }
   .keuze {
-    display: flex; align-items: center; gap: 0.75rem; width: 100%;
-    text-align: left; font-weight: 600; font-size: 0.9375rem; color: var(--color-inkt);
-    padding: 0.8rem 0.85rem; border-radius: 6px;
-    border: 1.5px solid #14201933; background: var(--color-papier);
-    transition: border-color 0.15s, background-color 0.15s;
-    cursor: pointer;
+    display: flex; align-items: center; gap: 0.65rem; width: 100%;
+    text-align: left; font-weight: 600; font-size: 0.8125rem; color: var(--color-inkt);
+    padding: 0.62rem 0.7rem; border-radius: 8px; border: 1px solid #1420192e; background: var(--color-wit);
+    cursor: pointer; transition: border-color 0.15s, background-color 0.15s;
   }
-  .keuze:hover { border-color: var(--color-bos); background: #e8f1ec; }
+  .keuze:hover { border-color: var(--color-bos); background: #f1f7f3; }
   .ico { color: var(--color-bos); flex: none; }
-  .terug { font-size: 0.8125rem; font-weight: 600; color: var(--color-bos); cursor: pointer; }
+  .algemeld { display: block; margin-top: 0.1rem; font-size: 0.6875rem; font-weight: 600; color: #8a5a12; }
+  .terug { font-size: 0.75rem; font-weight: 600; color: var(--color-bos); cursor: pointer; }
   .terug::before { content: "\2039\00a0"; }
   .fotovak {
-    display: block; width: 100%; aspect-ratio: 3 / 2; border-radius: 6px; overflow: hidden;
-    border: 1.5px dashed #1420195c; background: var(--color-papier); cursor: pointer;
+    position: relative; display: block; width: 100%; height: 5.4rem; border-radius: 8px; overflow: hidden;
+    border: 1.5px dashed #1420195c; background: var(--color-wit); cursor: pointer;
   }
-  .fotovak .leeg { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.875rem; font-weight: 600; color: var(--color-tekst); }
+  .fotovak .leeg { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; font-weight: 600; color: var(--color-tekst); }
   .fotovak .vol { display: none; height: 100%; }
+  .fotovak .wis { position: absolute; right: 0.4rem; bottom: 0.4rem; padding: 0.1rem 0.45rem; border-radius: 4px; background: rgb(20 32 25 / 0.75); color: #fff; font-size: 0.6875rem; font-weight: 600; }
   .fotovak[data-heeft-foto] { border-style: solid; }
   .fotovak[data-heeft-foto] .leeg { display: none; }
   .fotovak[data-heeft-foto] .vol { display: block; }
-  .hoofdknop, .tweedeknop {
-    width: 100%; padding: 0.85rem; border-radius: 6px; font-weight: 700; cursor: pointer;
-    transition: background-color 0.15s;
-  }
+  .invoer { display: block; width: 100%; padding: 0.45rem 0.55rem; border-radius: 6px; border: 1px solid #14201940; background: var(--color-wit); color: var(--color-inkt); font-size: 0.75rem; }
+  .invoer[hidden] { display: none; }
+  .invoer:focus { outline: 2px solid var(--color-fris); outline-offset: 0; }
+  .hoofdknop, .tweedeknop { width: 100%; padding: 0.7rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background-color 0.15s; }
   .hoofdknop { background: var(--color-bos); color: var(--color-wit); }
   .hoofdknop:hover { background: var(--color-bos-diep); }
   .tweedeknop { border: 1.5px solid var(--color-inkt); color: var(--color-inkt); }
-  .rij { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--color-lijn); }
-  .rij dt { color: var(--color-tekst-2); }
-  .rij dd { font-weight: 700; color: var(--color-inkt); text-align: right; }
+  .bezig { padding-top: 3.5rem; }
+  .bezig[hidden] { display: none; }
+  .spinner { display: inline-block; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 2.5px solid #14201926; border-top-color: var(--color-bos); animation: draai 0.7s linear infinite; }
+  @keyframes draai { to { transform: rotate(360deg); } }
+  .samenvatting div { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.4rem 0; border-bottom: 1px solid var(--color-lijn); }
+  .samenvatting dt { color: var(--color-tekst-2); }
+  .samenvatting dd { font-weight: 700; color: var(--color-inkt); text-align: right; }
+  .safari { flex: none; padding: 0.45rem 0.9rem 1.15rem; background: rgb(248 248 248 / 0.96); border-top: 1px solid #0000001a; color: #1c1c1e; }
+  .adres { display: flex; align-items: center; justify-content: space-between; padding: 0.45rem 0.75rem; border-radius: 0.8rem; background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); font-size: 0.8125rem; }
+  .knoppen { display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 0.5rem 0; color: #007aff; }
+
   .stappenlijst li { color: var(--color-tekst-2); transition: color 0.2s; }
   .stappenlijst .nr { display: inline-block; width: 1.25rem; color: var(--color-tekst-2); }
   .stappenlijst li.actief { color: var(--color-inkt); font-weight: 600; }
@@ -156,41 +283,67 @@ const stappen = ['Container herkend', 'Kiezen wat er aan de hand is', 'Foto toev
 </style>
 
 <script>
-  const tel = document.querySelector<HTMLElement>('.telefoon');
+  const tel = document.querySelector<HTMLElement>('.iphone');
   if (tel) {
-    let keuze = '';
-    let foto = false;
+    const $ = <T extends HTMLElement>(s: string) => tel.querySelector<T>(s)!;
     const lijst = document.querySelectorAll<HTMLElement>('.stappenlijst li');
-    const toon = (n: string) => {
-      tel.dataset.scherm = n;
-      tel.querySelectorAll<HTMLElement>('.stap').forEach((s) => (s.hidden = s.dataset.stap !== n));
-      // Stappenlijst naast de telefoon loopt mee: scherm 1 = herkend + kiezen.
-      const actief = n === '1' ? [0, 1] : n === '2' ? [2] : [3];
-      lijst.forEach((li, i) => li.classList.toggle('actief', actief.includes(i)));
-      const samenKeuze = tel.querySelector('[data-samen-keuze]');
-      const samenFoto = tel.querySelector('[data-samen-foto]');
-      if (samenKeuze) samenKeuze.textContent = keuze || '-';
-      if (samenFoto) samenFoto.textContent = foto ? 'Ja' : 'Nee';
+    const status = { keuze: '', naam: '', foto: false };
+    let teller = 8113;
+
+    const toon = (scherm: '0' | '1' | '2' | '3') => {
+      tel.dataset.scherm = scherm;
+      $('[data-stap="0"]').hidden = scherm !== '0';
+      $('[data-stap="1"]').hidden = scherm === '0';
+      tel.querySelectorAll<HTMLElement>('[data-pagina]').forEach((p) => (p.hidden = p.dataset.pagina !== scherm));
+      lijst.forEach((li, i) => li.classList.toggle('actief', String(i) === scherm));
     };
+    const reset = () => {
+      Object.assign(status, { keuze: '', naam: '', foto: false });
+      $('[data-foto]').removeAttribute('data-heeft-foto');
+      $<HTMLTextAreaElement>('[data-opmerking]').value = '';
+      $<HTMLInputElement>('[data-bericht]').checked = false;
+      $<HTMLInputElement>('[data-mail]').hidden = true;
+    };
+
+    tel.addEventListener('change', (e) => {
+      if ((e.target as HTMLElement).hasAttribute('data-bericht')) $<HTMLInputElement>('[data-mail]').hidden = !(e.target as HTMLInputElement).checked;
+    });
     tel.addEventListener('click', (e) => {
       const el = (e.target as HTMLElement).closest<HTMLElement>('button');
       if (!el) return;
-      if (el.dataset.keuze) { keuze = el.dataset.keuze; toon('2'); return; }
-      if (el.hasAttribute('data-foto')) {
-        foto = !foto;
-        el.toggleAttribute('data-heeft-foto', foto);
-        const st = tel.querySelector('[data-fotostatus]');
-        if (st) st.textContent = foto ? 'Foto toegevoegd. Tik nog eens om te verwijderen.' : 'Nog geen foto.';
-        return;
+      if (el.dataset.keuze) {
+        status.keuze = el.dataset.keuze;
+        status.naam = el.dataset.naam!;
+        $('[data-gekozen]').textContent = status.naam;
+        toon('2');
+      } else if (el.hasAttribute('data-foto')) {
+        status.foto = !status.foto;
+        el.toggleAttribute('data-heeft-foto', status.foto);
+      } else if (el.hasAttribute('data-verstuur')) {
+        const opmerking = $<HTMLTextAreaElement>('[data-opmerking]').value.trim();
+        const metBericht = $<HTMLInputElement>('[data-bericht]').checked;
+        const nr = `M-24-0${++teller}`;
+        $('[data-meldnr]').textContent = nr;
+        $('[data-samen-keuze]').textContent = status.naam;
+        $('[data-samen-foto]').textContent = status.foto ? 'Ja' : 'Nee';
+        $('[data-samen-bericht]').textContent = metBericht
+          ? 'De beheerder ziet je melding nu. Je krijgt een mail als hij is afgehandeld.'
+          : 'De beheerder van deze container ziet je melding nu.';
+        $('[data-bezig]').hidden = false;
+        $('[data-klaar]').hidden = true;
+        toon('3');
+        setTimeout(() => {
+          $('[data-bezig]').hidden = true;
+          $('[data-klaar]').hidden = false;
+          document.dispatchEvent(new CustomEvent('afvalmeldpunt:melding', { detail: { nr, categorie: status.keuze, foto: status.foto, opmerking } }));
+        }, 850);
+      } else if (el.hasAttribute('data-opnieuw')) {
+        reset();
+        toon('1');
+      } else if (el.dataset.naar) {
+        toon(el.dataset.naar as '0' | '1');
       }
-      if (el.hasAttribute('data-opnieuw')) {
-        keuze = ''; foto = false;
-        tel.querySelector('[data-foto]')?.removeAttribute('data-heeft-foto');
-        const st = tel.querySelector('[data-fotostatus]');
-        if (st) st.textContent = 'Nog geen foto.';
-      }
-      if (el.dataset.naar) toon(el.dataset.naar);
     });
-    toon('1');
+    toon('0');
   }
 </script>

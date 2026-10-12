@@ -8,12 +8,36 @@ import Sensor from '../components/Sensor.astro';
 import VoorWie from '../components/VoorWie.astro';
 import PlaatjeSectie from '../components/PlaatjeSectie.astro';
 import Bewoners from '../components/Bewoners.astro';
-import Demo from '../components/Demo.astro';
+import Vragen from '../components/Vragen.astro';
+import Afsluiter from '../components/Afsluiter.astro';
 import Footer from '../components/Footer.astro';
+import { VRAGEN } from '../lib/vragen';
+import { pad } from '../lib/pad';
+
+const url = new URL(pad('/'), Astro.site).href;
+const jsonld = [
+  {
+    '@type': 'Service',
+    '@id': url + '#dienst',
+    name: 'afvalmeldpunt',
+    serviceType: 'Meldsysteem voor ondergrondse afvalcontainers',
+    description: 'Een aluminium plaatje met eigen QR-code op elke ondergrondse afvalcontainer. Bewoners scannen de code en melden zonder app of account wat er mis is: container vol, bijgeplaatst afval, defect, stank of ongedierte. De beheerder ziet alle meldingen per container in een online dashboard. Optioneel met vulgraadsensor.',
+    provider: { '@id': url + '#organisatie' },
+    areaServed: { '@type': 'Country', name: 'Nederland' },
+    audience: { '@type': 'Audience', audienceType: 'Gemeenten, afvalinzamelaars en woningcorporaties' },
+    url,
+  },
+  {
+    '@type': 'FAQPage',
+    '@id': url + '#vragen',
+    mainEntity: VRAGEN.map(([v, a]) => ({ '@type': 'Question', name: v, acceptedAnswer: { '@type': 'Answer', text: a } })),
+  },
+];
 ---
 <Basis
-  titel="afvalmeldpunt | Melden met een QR-code op ondergrondse containers"
-  omschrijving="Een aluminium plaatje met QR-code op elke ondergrondse container. Bewoners melden zonder app of account, u ziet de meldingen per container in een dashboard. Optioneel met vulgraadsensor."
+  titel="afvalmeldpunt | Meldsysteem met QR-code voor ondergrondse afvalcontainers"
+  omschrijving="QR-code op elke ondergrondse container: bewoners melden een volle container, bijgeplaatst afval of een defect zonder app of account. Alle meldingen per container in één dashboard, optioneel met vulgraadsensor."
+  jsonld={jsonld}
 >
   <main id="hoofdinhoud">
     <Hero />
@@ -24,7 +48,8 @@ import Footer from '../components/Footer.astro';
     <VoorWie />
     <PlaatjeSectie />
     <Bewoners />
-    <Demo />
+    <Vragen />
+    <Afsluiter />
   </main>
   <Footer />
 </Basis>

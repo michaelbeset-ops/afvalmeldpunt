@@ -1,0 +1,67 @@
+---
+// Inlogscherm voor beheerders. Er is (nog) geen koppeling: inloggen geeft altijd een nette foutmelding.
+import { pad } from '../lib/pad';
+import { BEDRIJF } from '../lib/bedrijf';
+import Basis from '../layouts/Basis.astro';
+import Logo from '../components/Logo.astro';
+import Plaatje from '../components/Plaatje.astro';
+const veld = 'w-full rounded-md border border-inkt/30 bg-wit px-3.5 py-3 text-base text-inkt transition-colors focus:border-bos focus:outline-none focus-visible:outline-3 focus-visible:outline-fris';
+---
+<Basis titel="Inloggen | afvalmeldpunt" omschrijving="Inloggen op het dashboard van afvalmeldpunt, voor beheerders." noindex>
+  <div class="grid min-h-dvh lg:grid-cols-2">
+    <main id="hoofdinhoud" class="flex flex-col px-4 py-6 sm:px-10 lg:px-16">
+      <a href={pad("/")} class="-m-1 self-start p-1" aria-label="afvalmeldpunt, naar de startpagina"><Logo class="h-7 w-auto sm:h-[2.1rem]" /></a>
+      <div class="my-auto w-full max-w-[25rem] py-14">
+        <h1 class="text-[clamp(2.25rem,1.8rem+1.6vw,3rem)]">Inloggen</h1>
+        <p class="mt-3">Voor beheerders van gemeenten, inzamelaars en corporaties.</p>
+        <form class="inlog mt-9 grid gap-5" novalidate>
+          <label class="grid gap-1.5"><span class="font-semibold text-inkt">E-mailadres</span><input class={veld} type="email" name="email" autocomplete="username" required /></label>
+          <label class="grid gap-1.5">
+            <span class="flex items-baseline justify-between gap-4"><span class="font-semibold text-inkt">Wachtwoord</span><a class="text-sm font-semibold text-bos underline-offset-2 hover:underline" href={`mailto:${BEDRIJF.email}?subject=${encodeURIComponent('Wachtwoord vergeten afvalmeldpunt')}`}>Wachtwoord vergeten?</a></span>
+            <input class={veld} type="password" name="wachtwoord" autocomplete="current-password" required />
+          </label>
+          <label class="flex items-center gap-2.5 text-sm"><input type="checkbox" name="onthoud" class="h-4 w-4 accent-bos" /> Ingelogd blijven op dit apparaat</label>
+          <p class="fout hidden rounded-md bg-[#f6e7e4] px-4 py-3 text-sm font-semibold text-[#8a2a1b]" role="alert"></p>
+          <button type="submit" class="mt-1 rounded-md bg-bos px-5 py-3.5 font-display text-base font-bold text-wit shadow-knop transition-colors duration-200 hover:bg-bos-diep disabled:opacity-60">Inloggen</button>
+        </form>
+        <p class="mt-8 text-sm text-tekst-2">Nog geen account? <a class="font-semibold text-bos underline underline-offset-2" href={pad("/contact/")}>Vraag een demo aan</a>.</p>
+      </div>
+      <p class="text-sm text-tekst-2"><a class="underline-offset-2 hover:underline" href={pad("/privacy/")}>Privacyverklaring</a></p>
+    </main>
+    <div class="relative hidden overflow-hidden bg-grond lg:block" aria-hidden="true">
+      <div class="arcering absolute inset-0"></div>
+      <div class="absolute inset-x-16 bottom-16">
+        <Plaatje id="inlog" class="h-auto w-56 drop-shadow-xl" titel="" />
+        <p class="mt-10 max-w-[24rem] font-display text-[2rem] leading-[1.1] font-extrabold tracking-[-0.03em] text-wit">Alle meldingen, per container.</p>
+      </div>
+    </div>
+  </div>
+</Basis>
+
+<style>
+  .arcering { background: repeating-linear-gradient(45deg, transparent 0 10px, rgb(255 255 255 / 0.04) 10px 11px); }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.inlog');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fout = form.querySelector<HTMLElement>('.fout')!;
+    const knop = form.querySelector<HTMLButtonElement>('button')!;
+    const leeg = [...form.querySelectorAll<HTMLInputElement>('input[required]')].find((i) => !i.value.trim());
+    if (leeg) {
+      fout.textContent = 'Vul uw e-mailadres en wachtwoord in.';
+      fout.classList.remove('hidden');
+      leeg.focus();
+      return;
+    }
+    knop.disabled = true;
+    knop.textContent = 'Bezig met inloggen...';
+    setTimeout(() => {
+      knop.disabled = false;
+      knop.textContent = 'Inloggen';
+      fout.textContent = 'Deze combinatie van e-mailadres en wachtwoord kennen we niet.';
+      fout.classList.remove('hidden');
+    }, 900);
+  });
+</script>

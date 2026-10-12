@@ -1,0 +1,37 @@
+---
+import { BEDRIJF } from '../lib/bedrijf';
+import Basis from '../layouts/Basis.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import DemoFormulier from '../components/DemoFormulier.astro';
+const stappen = [
+  ['We nemen contact op', 'Per mail, of telefonisch als u uw nummer achterlaat.'],
+  ['De demo', 'We laten de meldpagina en het dashboard zien en kijken samen hoe het past bij uw containers.'],
+  ['Proef of offerte', 'U beslist daarna zelf of u verder wilt.'],
+];
+---
+<Basis titel="Demo aanvragen | afvalmeldpunt" omschrijving="Vraag een demo aan van afvalmeldpunt: het meldsysteem met QR-code voor ondergrondse afvalcontainers. Voor gemeenten, afvalinzamelaars en woningcorporaties.">
+  <Header />
+  <main id="hoofdinhoud" class="mx-auto grid max-w-[90rem] gap-14 px-4 pt-10 pb-24 sm:px-8 sm:pt-16 lg:grid-cols-12 lg:gap-8 lg:px-16">
+    <div class="lg:col-span-5">
+      <h1 class="text-[clamp(2.5rem,1.6rem+3.6vw,4.5rem)]">Demo aanvragen</h1>
+      <p class="mt-5 max-w-[28rem] text-lg">Benieuwd hoe het werkt voor uw containers? Laat uw gegevens achter, dan plannen we een demo.</p>
+      <ol class="mt-10 grid gap-6 border-t-2 border-inkt pt-8">
+        {stappen.map(([kop, tekst], i) => (
+          <li class="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3">
+            <span class="font-display text-xl font-extrabold text-bos">{i + 1}</span>
+            <span><span class="block font-display text-xl font-extrabold tracking-[-0.02em] text-inkt">{kop}</span><span class="mt-1 block">{tekst}</span></span>
+          </li>
+        ))}
+      </ol>
+      <div class="mt-10 border-l-[3px] border-fris pl-5">
+        <p class="font-semibold text-inkt">Liever direct mailen?</p>
+        <p class="mt-1"><a class="font-semibold text-bos underline underline-offset-2" href={`mailto:${BEDRIJF.email}`}>{BEDRIJF.email}</a></p>
+      </div>
+    </div>
+    <div class="lg:col-span-6 lg:col-start-7 lg:pt-4">
+      <DemoFormulier />
+    </div>
+  </main>
+  <Footer />
+</Basis>
