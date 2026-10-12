@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /plaatje
-
-Sitemap: https://afvalmeldpunt.nl/sitemap-index.xml

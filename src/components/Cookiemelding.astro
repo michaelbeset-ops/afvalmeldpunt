@@ -1,4 +1,5 @@
 ---
+import { pad } from '../lib/pad';
 // Cookiemelding volgens de Sitefront-standaard. De melding past zich aan op wat de site echt
 // plaatst: staan er alleen noodzakelijke categorieen in de lijst hieronder, dan is het een korte
 // mededeling met "Begrepen". Komt er later iets bij (statistieken, embeds), zet het dan in
@@ -50,7 +51,7 @@ const heeftKeuze = optioneel.length > 0;
     ) : (
       <button type="button" data-actie="weiger" class="rounded-md bg-bos px-4 py-2.5 font-display font-bold text-wit transition-colors hover:bg-bos-diep">Begrepen</button>
     )}
-    <a href="/privacy/#cookies" class="py-2 font-semibold text-bos underline underline-offset-2">Meer over cookies</a>
+    <a href={pad("/privacy/#cookies")} class="py-2 font-semibold text-bos underline underline-offset-2">Meer over cookies</a>
   </div>
 </div>
 

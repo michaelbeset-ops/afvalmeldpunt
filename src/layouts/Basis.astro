@@ -1,14 +1,17 @@
 ---
+import { pad, preview } from '../lib/pad';
 import '../styles/global.css';
 import Cookiemelding from '../components/Cookiemelding.astro';
 interface Props { titel: string; omschrijving: string; noindex?: boolean; jsonld?: Record<string, unknown>[] }
-const { titel, omschrijving, noindex = false, jsonld = [] } = Astro.props;
+const { titel, omschrijving, noindex: geenIndex = false, jsonld = [] } = Astro.props;
+// De preview op github.io mag niet in Google: die komt later op afvalmeldpunt.nl.
+const noindex = geenIndex || preview;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogBeeld = new URL('/og.jpg', Astro.site);
+const ogBeeld = new URL(pad('/og.jpg'), Astro.site);
 const ogAlt = 'Aluminium plaatje met QR-code van afvalmeldpunt, met de kop: Melden bij de container zelf, met één scan.';
 // Alleen feiten die vaststaan (naam, adres van de site, taal). Organisatiegegevens zoals KvK,
 // adres en telefoon komen er pas bij als ze zijn aangeleverd.
-const site = { '@type': 'WebSite', '@id': new URL('/#website', Astro.site).href, name: 'afvalmeldpunt', url: Astro.site!.href, inLanguage: 'nl-NL' };
+const site = { '@type': 'WebSite', '@id': new URL(pad('/#website'), Astro.site).href, name: 'afvalmeldpunt', url: new URL(pad('/'), Astro.site).href, inLanguage: 'nl-NL' };
 const pagina = { '@type': 'WebPage', '@id': canonical.href + '#pagina', url: canonical.href, name: titel, description: omschrijving, inLanguage: 'nl-NL', isPartOf: { '@id': site['@id'] } };
 const graaf = { '@context': 'https://schema.org', '@graph': [site, pagina, ...jsonld] };
 ---
@@ -20,9 +23,9 @@ const graaf = { '@context': 'https://schema.org', '@graph': [site, pagina, ...js
     <title>{titel}</title>
     <meta name="description" content={omschrijving} />
     {noindex ? <meta name="robots" content="noindex, nofollow" /> : <link rel="canonical" href={canonical} />}
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" href={pad("/favicon.svg")} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={pad("/apple-touch-icon.png")} />
+    <link rel="sitemap" href={pad("/sitemap-index.xml")} />
     <meta name="theme-color" content="#142019" />
     <meta property="og:site_name" content="afvalmeldpunt" />
     <meta property="og:title" content={titel} />

@@ -3,10 +3,11 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
-// Eigen product van Sitefront, draait straks op het eigen domein in de root.
+// Standaard: het eigen domein in de root. De preview op github.io bouwt met
+// SITE_URL=https://michaelbeset-ops.github.io en BASE_PATH=/afvalmeldpunt/ (zie de deploy-workflow).
 export default defineConfig({
-  site: 'https://afvalmeldpunt.nl',
-  base: '/',
+  site: process.env.SITE_URL ?? 'https://afvalmeldpunt.nl',
+  base: process.env.BASE_PATH ?? '/',
   trailingSlash: 'ignore',
   devToolbar: { enabled: false },
   build: { inlineStylesheets: 'always' },
