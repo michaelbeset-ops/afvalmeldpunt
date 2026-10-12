@@ -14,13 +14,8 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
-# PREVIEW: zolang er nog [[AANLEVEREN]] in de site staat, draait hij in een submap op github.io
-# met noindex. Definitief op afvalmeldpunt.nl: de drie env-regels hieronder weghalen en
-# public/CNAME toevoegen met daarin alleen: afvalmeldpunt.nl
-env:
-  SITE_URL: https://michaelbeset-ops.github.io
-  BASE_PATH: /afvalmeldpunt/
-  PUBLIC_PREVIEW: '1'
+# Live op afvalmeldpunt.nl (custom domain ingesteld onder Settings > Pages).
+# Terug naar een preview op github.io: SITE_URL, BASE_PATH en PUBLIC_PREVIEW=1 als env zetten.
 
 jobs:
   build:
