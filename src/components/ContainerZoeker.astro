@@ -1,0 +1,62 @@
+---
+// Melden zonder QR-code: zoeken op containernummer. Er zijn nog geen containers aangesloten,
+// dus een nummer leidt nu altijd tot een nette "nog niet bekend". Zoeken op locatie staat er
+// bewust als "binnenkort": een kaart met nul containers zou het verkeerde signaal geven.
+// Zodra er containers zijn, komt hier de koppeling met het meldsysteem.
+---
+<div class="zoeker rounded-md bg-wit p-5 text-tekst sm:p-7">
+  <h3 class="text-[1.5rem] text-inkt">Geen QR-code bij de hand?</h3>
+  <p class="mt-2">Vul het nummer in dat op het plaatje van de container staat.</p>
+
+  <form class="zoekform mt-5" novalidate>
+    <label for="containernummer" class="block font-semibold text-inkt">Containernummer</label>
+    <div class="mt-1.5 flex gap-2">
+      <input id="containernummer" name="nummer" type="text" inputmode="numeric" autocomplete="off" placeholder="Bijvoorbeeld 0123" maxlength="8"
+        class="min-w-0 flex-1 rounded-md border border-inkt/30 bg-wit px-3.5 py-3 text-base text-inkt focus:border-bos focus:outline-none focus-visible:outline-3 focus-visible:outline-fris" aria-describedby="zoek-uitslag" />
+      <button type="submit" class="shrink-0 rounded-md bg-bos px-5 py-3 font-display font-bold text-wit transition-colors hover:bg-bos-diep">Zoeken</button>
+    </div>
+  </form>
+
+  <div id="zoek-uitslag" class="uitslag" role="status" aria-live="polite" hidden></div>
+
+  <div class="my-5 flex items-center gap-3 text-sm text-tekst-2" aria-hidden="true"><span class="h-px flex-1 bg-inkt/15"></span>of<span class="h-px flex-1 bg-inkt/15"></span></div>
+
+  <button type="button" class="flex w-full items-center justify-between gap-3 rounded-md border border-inkt/20 px-4 py-3 text-left text-tekst-2" disabled aria-describedby="locatie-uitleg">
+    <span class="flex items-center gap-2.5 font-semibold">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+      Container in de buurt zoeken
+    </span>
+    <span class="rounded-sm bg-papier-2 px-2 py-0.5 text-xs font-bold text-tekst">Binnenkort</span>
+  </button>
+  <p id="locatie-uitleg" class="mt-2 text-sm text-tekst-2">Zoeken op je locatie zijn we nog aan het bouwen.</p>
+</div>
+
+<style>
+  .uitslag { margin-top: 0.85rem; padding: 0.8rem 1rem; border-radius: 6px; background: var(--color-papier-2); color: var(--color-inkt); font-size: var(--text-sm); }
+  .uitslag.fout { background: #f6e7e4; color: #8a2a1b; }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.zoekform');
+  const uitslag = document.getElementById('zoek-uitslag');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!uitslag) return;
+    const invoer = form.querySelector<HTMLInputElement>('input')!;
+    const nummer = invoer.value.trim().replace(/\s+/g, '');
+    uitslag.hidden = false;
+    if (!/^\d{3,8}$/.test(nummer)) {
+      uitslag.className = 'uitslag fout';
+      uitslag.textContent = 'Vul het nummer van het plaatje in, alleen cijfers. Bijvoorbeeld 0123.';
+      invoer.focus();
+      return;
+    }
+    uitslag.className = 'uitslag';
+    uitslag.innerHTML = '';
+    const kop = document.createElement('strong');
+    kop.textContent = `Container ${nummer} kunnen we (nog) niet vinden.`;
+    const tekst = document.createElement('span');
+    tekst.textContent = ' Afvalmeldpunt wordt nu bij de eerste gemeenten ingevoerd. Staat er geen plaatje met QR-code op de container, geef je melding dan door aan je gemeente.';
+    uitslag.append(kop, tekst);
+  });
+</script>
