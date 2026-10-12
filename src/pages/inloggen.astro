@@ -3,6 +3,7 @@
 // gecentreerde kaart op lichtgrijs). Er is geen koppeling: inloggen geeft altijd een nette foutmelding.
 import { pad } from '../lib/pad';
 import { BEDRIJF } from '../lib/bedrijf';
+import '@fontsource-variable/nunito/wght.css';
 import { merkPaden } from '../lib/merk.mjs';
 import Basis from '../layouts/Basis.astro';
 ---
@@ -67,7 +68,7 @@ import Basis from '../layouts/Basis.astro';
 
 <style>
   /* Systeemstijl, zoals het dashboard: dit is de software, niet de site. */
-  .login { min-height: 100dvh; background: #f3f4f6; color: #374151; font-family: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif; }
+  .login { min-height: 100dvh; background: #f3f4f6; color: #374151; font-family: "Nunito Variable", "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif; }
   .kaart { padding: 2rem 1.5rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 8px 24px -12px rgb(0 0 0 / 0.12); }
   @media (min-width: 640px) { .kaart { padding: 2.25rem 2.25rem 1.75rem; } }
   .kaart h1 { font-family: inherit; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; color: #111827; }
