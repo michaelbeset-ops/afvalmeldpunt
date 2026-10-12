@@ -1,67 +1,126 @@
 ---
-// Inlogscherm voor beheerders. Er is (nog) geen koppeling: inloggen geeft altijd een nette foutmelding.
+// Inlogscherm voor beheerders, in dezelfde systeemstijl als het dashboard (Laravel-achtig:
+// gecentreerde kaart op lichtgrijs). Er is geen koppeling: inloggen geeft altijd een nette foutmelding.
 import { pad } from '../lib/pad';
 import { BEDRIJF } from '../lib/bedrijf';
+import { merkPaden } from '../lib/merk.mjs';
 import Basis from '../layouts/Basis.astro';
-import Logo from '../components/Logo.astro';
-import Plaatje from '../components/Plaatje.astro';
-const veld = 'w-full rounded-md border border-inkt/30 bg-wit px-3.5 py-3 text-base text-inkt transition-colors focus:border-bos focus:outline-none focus-visible:outline-3 focus-visible:outline-fris';
 ---
-<Basis titel="Inloggen | afvalmeldpunt" omschrijving="Inloggen op het dashboard van afvalmeldpunt, voor beheerders." noindex>
-  <div class="grid min-h-dvh lg:grid-cols-2">
-    <main id="hoofdinhoud" class="flex flex-col px-4 py-6 sm:px-10 lg:px-16">
-      <a href={pad("/")} class="-m-1 self-start p-1" aria-label="afvalmeldpunt, naar de startpagina"><Logo class="h-7 w-auto sm:h-[2.1rem]" /></a>
-      <div class="my-auto w-full max-w-[25rem] py-14">
-        <h1 class="text-[clamp(2.25rem,1.8rem+1.6vw,3rem)]">Inloggen</h1>
-        <p class="mt-3">Voor beheerders van gemeenten, inzamelaars en corporaties.</p>
-        <form class="inlog mt-9 grid gap-5" novalidate>
-          <label class="grid gap-1.5"><span class="font-semibold text-inkt">E-mailadres</span><input class={veld} type="email" name="email" autocomplete="username" required /></label>
+<Basis titel="Inloggen | afvalmeldpunt" omschrijving="Inloggen op de beheeromgeving van afvalmeldpunt, voor beheerders." noindex>
+  <div class="login">
+    <main id="hoofdinhoud" class="mx-auto flex min-h-dvh w-full max-w-[28rem] flex-col px-4 py-10 sm:py-16">
+      <a href={pad("/")} class="mx-auto flex items-center gap-2.5">
+        <svg viewBox="0 0 48 48" class="h-11 w-11" aria-hidden="true"><g set:html={merkPaden('#1c6a43', '#3f9f64')} /></svg>
+        <span class="leading-none">
+          <span class="block text-[1.0625rem] font-bold tracking-wide text-[#1c6a43]">AFVALMELDPUNT</span>
+          <span class="mt-1 block text-[0.6875rem] text-[#5b6371]">Meldingen &amp; containerbeheer</span>
+        </span>
+      </a>
+
+      <div class="kaart mt-8">
+        <h1>Inloggen</h1>
+        <p class="mt-1 text-[0.875rem] text-[#5b6371]">Log in op de beheeromgeving van uw organisatie.</p>
+
+        <form class="inlog mt-6 grid gap-4" novalidate>
+          <div class="fout hidden" role="alert">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4" /><path d="M8 4.5v4.5M8 11v.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+            <span data-fouttekst></span>
+          </div>
           <label class="grid gap-1.5">
-            <span class="flex items-baseline justify-between gap-4"><span class="font-semibold text-inkt">Wachtwoord</span><a class="text-sm font-semibold text-bos underline-offset-2 hover:underline" href={`mailto:${BEDRIJF.email}?subject=${encodeURIComponent('Wachtwoord vergeten afvalmeldpunt')}`}>Wachtwoord vergeten?</a></span>
-            <input class={veld} type="password" name="wachtwoord" autocomplete="current-password" required />
+            <span class="label">E-mailadres</span>
+            <input class="invoer" type="email" name="email" autocomplete="username" placeholder="naam@gemeente.nl" required />
           </label>
-          <label class="flex items-center gap-2.5 text-sm"><input type="checkbox" name="onthoud" class="h-4 w-4 accent-bos" /> Ingelogd blijven op dit apparaat</label>
-          <p class="fout hidden rounded-md bg-[#f6e7e4] px-4 py-3 text-sm font-semibold text-[#8a2a1b]" role="alert"></p>
-          <button type="submit" class="mt-1 rounded-md bg-bos px-5 py-3.5 font-display text-base font-bold text-wit shadow-knop transition-colors duration-200 hover:bg-bos-diep disabled:opacity-60">Inloggen</button>
+          <label class="grid gap-1.5">
+            <span class="flex items-baseline justify-between gap-4">
+              <span class="label">Wachtwoord</span>
+              <a class="link text-[0.8125rem]" href={`mailto:${BEDRIJF.email}?subject=${encodeURIComponent('Wachtwoord vergeten afvalmeldpunt')}`}>Wachtwoord vergeten?</a>
+            </span>
+            <span class="relative block">
+              <input class="invoer pr-11" type="password" name="wachtwoord" autocomplete="current-password" required data-ww />
+              <button type="button" class="oog" aria-label="Wachtwoord tonen" aria-pressed="false" data-toon>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="3" /></svg>
+              </button>
+            </span>
+          </label>
+          <label class="flex items-center gap-2.5 text-[0.875rem] text-[#374151]">
+            <input type="checkbox" name="onthoud" class="vink" /> Ingelogd blijven
+          </label>
+          <button type="submit" class="knop">Inloggen</button>
         </form>
-        <p class="mt-8 text-sm text-tekst-2">Nog geen account? <a class="font-semibold text-bos underline underline-offset-2" href={pad("/contact/")}>Vraag een demo aan</a>.</p>
+
+        <div class="mt-6 flex items-center gap-2.5 border-t border-[#e5e7eb] pt-5 text-[0.8125rem] text-[#5b6371]">
+          <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3" /><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.3" /></svg>
+          Beveiligde verbinding. Alleen voor beheerders met een account.
+        </div>
       </div>
-      <p class="text-sm text-tekst-2"><a class="underline-offset-2 hover:underline" href={pad("/privacy/")}>Privacyverklaring</a></p>
+
+      <p class="mt-6 text-center text-[0.875rem] text-[#4b5563]">Nog geen account? <a class="link" href={pad("/contact/")}>Vraag een demo aan</a></p>
+
+      <p class="mt-auto flex flex-wrap justify-center gap-x-5 gap-y-1 pt-12 text-[0.8125rem] text-[#5b6371]">
+        <a class="hover:text-[#111827] hover:underline" href={pad("/")}>afvalmeldpunt.nl</a>
+        <a class="hover:text-[#111827] hover:underline" href={pad("/privacy/")}>Privacyverklaring</a>
+        <a class="hover:text-[#111827] hover:underline" href={`mailto:${BEDRIJF.email}`}>Hulp nodig?</a>
+      </p>
     </main>
-    <div class="relative hidden overflow-hidden bg-grond lg:block" aria-hidden="true">
-      <div class="arcering absolute inset-0"></div>
-      <div class="absolute inset-x-16 bottom-16">
-        <Plaatje id="inlog" class="h-auto w-56 drop-shadow-xl" titel="" />
-        <p class="mt-10 max-w-[24rem] font-display text-[2rem] leading-[1.1] font-extrabold tracking-[-0.03em] text-wit">Alle meldingen, per container.</p>
-      </div>
-    </div>
   </div>
 </Basis>
 
 <style>
-  .arcering { background: repeating-linear-gradient(45deg, transparent 0 10px, rgb(255 255 255 / 0.04) 10px 11px); }
+  /* Systeemstijl, zoals het dashboard: dit is de software, niet de site. */
+  .login { min-height: 100dvh; background: #f3f4f6; color: #374151; font-family: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif; }
+  .kaart { padding: 2rem 1.5rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 8px 24px -12px rgb(0 0 0 / 0.12); }
+  @media (min-width: 640px) { .kaart { padding: 2.25rem 2.25rem 1.75rem; } }
+  .kaart h1 { font-family: inherit; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; color: #111827; }
+  .label { font-size: 0.875rem; font-weight: 600; color: #374151; }
+  .invoer { display: block; width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #111827; font-size: 0.9375rem; box-shadow: 0 1px 2px rgb(0 0 0 / 0.04); transition: border-color 0.15s, box-shadow 0.15s; }
+  .invoer::placeholder { color: #9ca3af; }
+  .invoer:focus { outline: none; border-color: #1e40af; box-shadow: 0 0 0 3px rgb(30 64 175 / 0.18); }
+  .oog { position: absolute; top: 50%; right: 0.4rem; transform: translateY(-50%); padding: 0.35rem; border-radius: 4px; color: #5b6371; cursor: pointer; }
+  .oog:hover, .oog[aria-pressed="true"] { color: #111827; }
+  .vink { width: 1rem; height: 1rem; accent-color: #1f2937; }
+  .knop { margin-top: 0.25rem; padding: 0.7rem; border-radius: 6px; background: #1f2937; color: #fff; font-weight: 700; font-size: 0.9375rem; cursor: pointer; transition: background-color 0.15s; }
+  .knop:hover { background: #111827; }
+  .knop:disabled { opacity: 0.7; cursor: wait; }
+  .link { color: #1e40af; font-weight: 600; }
+  .link:hover { text-decoration: underline; }
+  .fout { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.65rem 0.8rem; border: 1px solid #fecaca; border-radius: 6px; background: #fef2f2; color: #991b1b; font-size: 0.875rem; }
+  .fout.hidden { display: none; }
+  .fout svg { flex: none; margin-top: 0.15rem; }
 </style>
 
 <script>
   const form = document.querySelector<HTMLFormElement>('.inlog');
-  form?.addEventListener('submit', (e) => {
-    e.preventDefault();
+  if (form) {
     const fout = form.querySelector<HTMLElement>('.fout')!;
-    const knop = form.querySelector<HTMLButtonElement>('button')!;
-    const leeg = [...form.querySelectorAll<HTMLInputElement>('input[required]')].find((i) => !i.value.trim());
-    if (leeg) {
-      fout.textContent = 'Vul uw e-mailadres en wachtwoord in.';
-      fout.classList.remove('hidden');
-      leeg.focus();
-      return;
-    }
-    knop.disabled = true;
-    knop.textContent = 'Bezig met inloggen...';
-    setTimeout(() => {
-      knop.disabled = false;
-      knop.textContent = 'Inloggen';
-      fout.textContent = 'Deze combinatie van e-mailadres en wachtwoord kennen we niet.';
-      fout.classList.remove('hidden');
-    }, 900);
-  });
+    const tekst = form.querySelector<HTMLElement>('[data-fouttekst]')!;
+    const knop = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const ww = form.querySelector<HTMLInputElement>('[data-ww]')!;
+    const toon = form.querySelector<HTMLButtonElement>('[data-toon]')!;
+    toon.addEventListener('click', () => {
+      const zichtbaar = ww.type === 'password';
+      ww.type = zichtbaar ? 'text' : 'password';
+      toon.setAttribute('aria-pressed', String(zichtbaar));
+      toon.setAttribute('aria-label', zichtbaar ? 'Wachtwoord verbergen' : 'Wachtwoord tonen');
+    });
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const leeg = [...form.querySelectorAll<HTMLInputElement>('input[required]')].find((i) => !i.value.trim());
+      if (leeg) {
+        tekst.textContent = 'Vul uw e-mailadres en wachtwoord in.';
+        fout.classList.remove('hidden');
+        leeg.focus();
+        return;
+      }
+      knop.disabled = true;
+      knop.textContent = 'Bezig met inloggen...';
+      setTimeout(() => {
+        knop.disabled = false;
+        knop.textContent = 'Inloggen';
+        tekst.textContent = 'Deze combinatie van e-mailadres en wachtwoord kennen we niet.';
+        fout.classList.remove('hidden');
+        ww.value = '';
+        ww.focus();
+      }, 900);
+    });
+  }
 </script>
