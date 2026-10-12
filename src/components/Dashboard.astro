@@ -26,7 +26,7 @@ const menu = ['Dashboard', 'Containers', 'Meldingen', 'Gebruikers', 'QR-codes'];
   <div class="mx-auto max-w-[90rem] px-4 sm:px-8 lg:px-16">
     <div class="grid gap-6 lg:grid-cols-12 lg:items-end">
       <h2 id="dash-kop" class="max-w-[14ch] text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] text-wit lg:col-span-6">Alle meldingen, per container</h2>
-      <p class="max-w-[32rem] text-lg lg:col-span-5 lg:col-start-8">De beheerder ziet per container wat er gemeld is, waar en wanneer. Zo blijft er niets liggen.</p>
+      <p class="max-w-[32rem] text-lg lg:col-span-5 lg:col-start-8">Per container zien wat er gemeld is, in één overzichtelijk scherm. Zo blijft er niets liggen.</p>
     </div>
 
     <div class="app relative mt-12 overflow-hidden rounded-md sm:mt-16" role="group" aria-label="Voorbeeld van het beheeroverzicht van afvalmeldpunt, met containers en open meldingen">
@@ -46,42 +46,50 @@ const menu = ['Dashboard', 'Containers', 'Meldingen', 'Gebruikers', 'QR-codes'];
 
       <div class="titelbalk" aria-hidden="true"><p class="binnen">Beheeroverzicht</p></div>
 
-      <div class="werkruimte" aria-hidden="true">
+      <div class="werkruimte">
         <div class="binnen">
-          <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
+          <div class="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-hidden="true">
             {kaarten.map(([t, w, s]) => (
               <div class="kaart kpi"><p class="text-[0.8125rem] text-[#4b5563]">{t}</p><p class="waarde">{w}</p><p class="mt-1 text-[0.75rem] text-[#4b5563]">{s}</p></div>
             ))}
           </div>
 
-          <div class="kaart mt-4 overflow-hidden">
-            <table class="w-full border-collapse text-left">
-              <thead>
-                <tr><th>Container</th><th class="hidden md:table-cell">Locatie</th><th class="hidden lg:table-cell">Wijk</th><th class="hidden sm:table-cell">Status</th><th class="text-right">Meldingen</th></tr>
-              </thead>
-              <tbody>
-                {rijen.map((r) => (
-                  <tr class="rij" data-nr={r.nr}>
-                    <td><span class="text-[#111827]">{r.nr}</span><span class="block text-[0.75rem] text-[#4b5563] md:hidden">{r.locatie}</span></td>
-                    <td class="hidden md:table-cell">{r.locatie}</td>
-                    <td class="hidden lg:table-cell">{r.wijk}</td>
-                    <td class="hidden sm:table-cell">{r.status}</td>
-                    <td class="text-right" data-open={r.open}>{r.open ? `${r.open} open` : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div class="relative mt-4">
+            <!-- De tabel is er wel, maar wazig: je ziet dat er veel in zit, niet wat. -->
+            <div class="kaart wazig overflow-hidden" aria-hidden="true">
+              <table class="w-full border-collapse text-left">
+                <thead>
+                  <tr><th>Container</th><th class="hidden md:table-cell">Locatie</th><th class="hidden lg:table-cell">Wijk</th><th class="hidden sm:table-cell">Status</th><th class="text-right">Meldingen</th></tr>
+                </thead>
+                <tbody>
+                  {rijen.map((r) => (
+                    <tr>
+                      <td><span class="text-[#111827]">{r.nr}</span><span class="block text-[0.75rem] text-[#4b5563] md:hidden">{r.locatie}</span></td>
+                      <td class="hidden md:table-cell">{r.locatie}</td>
+                      <td class="hidden lg:table-cell">{r.wijk}</td>
+                      <td class="hidden sm:table-cell">{r.status}</td>
+                      <td class="text-right">{r.open ? `${r.open} open` : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div class="sluier">
+              <p class="font-display text-[1.5rem] font-extrabold tracking-[-0.02em] text-balance text-inkt">Benieuwd wat erachter zit?</p>
+              <p class="mt-1.5 text-balance text-[#374151]">We laten het u graag zien, in een korte demo.</p>
+              <a href={pad('/contact/')} class="mt-4 inline-flex items-center gap-2.5 rounded-md bg-bos px-5 py-3 font-display font-bold text-wit transition-colors hover:bg-bos-diep">
+                Demo aanvragen
+                <svg class="h-4 w-4" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- De rest laten we zien in een demo. -->
-      <div class="sluier">
-        <p class="font-display text-[1.375rem] font-extrabold tracking-[-0.02em] text-balance text-inkt">De rest laten we graag zelf zien.</p>
-        <a href={pad('/contact/')} class="mt-4 inline-flex items-center gap-2.5 rounded-md bg-bos px-5 py-3 font-display font-bold text-wit transition-colors hover:bg-bos-diep">
-          Demo aanvragen
-          <svg class="h-4 w-4" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
-        </a>
+      <!-- Melding van de telefoon hierboven: schuift binnen zoals in de echte omgeving. -->
+      <div class="toast" role="status" aria-live="polite" hidden>
+        <span class="stip" aria-hidden="true"></span>
+        <span><strong class="block text-[#111827]">Nieuwe melding</strong><span data-toast-tekst>Container 0123</span></span>
       </div>
     </div>
   </div>
@@ -96,34 +104,39 @@ const menu = ['Dashboard', 'Containers', 'Meldingen', 'Gebruikers', 'QR-codes'];
   .navlink.actief { border-color: #1e40af; color: #111827; }
   .titelbalk { padding: 1rem 0; background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / 0.08); }
   .titelbalk p { font-size: 1.375rem; color: #111827; }
-  .werkruimte { padding: 1.5rem 0 8.5rem; }
+  .werkruimte { padding: 1.5rem 0 2rem; }
   .kaart { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; }
   .kpi { padding: 1rem 1rem 0.9rem; }
   .waarde { margin-top: 0.1rem; font-size: 1.0625rem; font-weight: 700; color: #111827; white-space: nowrap; }
   @media (min-width: 640px) { .waarde { font-size: 1.25rem; } }
   th { padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; background: #f9fafb; font-weight: 600; color: #374151; white-space: nowrap; }
   td { padding: 0.8rem 1rem; border-bottom: 1px solid #e5e7eb; }
-  .rij.binnen-gekomen { animation: binnen 2.4s ease-out; }
-  @keyframes binnen { from { background: #fef9c3; } to { background: transparent; } }
-  /* Vervaagt de onderkant: genoeg om te zien dat het echt is, niet hoe alles werkt. */
-  .sluier {
-    position: absolute; inset: auto 0 0; height: 46%;
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 0 1rem 2.25rem; text-align: center;
-    background: linear-gradient(to bottom, rgb(243 244 246 / 0), rgb(243 244 246 / 0.9) 40%, #f3f4f6 62%);
+  .wazig { filter: blur(3.5px); user-select: none; }
+  .sluier { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; text-align: center; background: rgb(243 244 246 / 0.45); }
+  .toast {
+    position: absolute; top: 4.4rem; right: 1rem; z-index: 2; display: flex; align-items: flex-start; gap: 0.65rem;
+    max-width: calc(100% - 2rem); padding: 0.75rem 1rem; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff;
+    box-shadow: 0 10px 24px -8px rgb(0 0 0 / 0.25); animation: toast-in 0.35s ease-out;
   }
+  .toast[hidden] { display: none; }
+  .stip { width: 0.6rem; height: 0.6rem; margin-top: 0.4rem; border-radius: 50%; background: #ea580c; flex: none; }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(-8px); } }
 </style>
 
 <script>
-  // Melding van de telefoon in de meldflow: telt op bij container 0123.
-  document.addEventListener('afvalmeldpunt:melding', () => {
-    const rij = document.querySelector<HTMLElement>('.app .rij[data-nr="0123"]');
-    const cel = rij?.querySelector<HTMLElement>('[data-open]');
-    if (!rij || !cel) return;
-    const n = Number(cel.dataset.open) + 1;
-    cel.dataset.open = String(n);
-    cel.textContent = `${n} open`;
-    rij.classList.remove('binnen-gekomen');
-    void rij.offsetWidth;
-    rij.classList.add('binnen-gekomen');
+  // Melding van de telefoon in de meldflow: verschijnt als melding rechtsboven.
+  const NAMEN: Record<string, string> = { vol: 'Container vol', bijgeplaatst: 'Bijgeplaatst afval', defect: 'Defect of kapot', overig: 'Stank, ongedierte of overig' };
+  let weg: number | undefined;
+  document.addEventListener('afvalmeldpunt:melding', (e) => {
+    const toast = document.querySelector<HTMLElement>('.app .toast');
+    const tekst = toast?.querySelector<HTMLElement>('[data-toast-tekst]');
+    if (!toast || !tekst) return;
+    const cat = (e as CustomEvent).detail?.categorie as string;
+    tekst.textContent = `Container 0123 \u00b7 ${NAMEN[cat] ?? 'Melding'} \u00b7 zojuist`;
+    toast.hidden = true;
+    void toast.offsetWidth;
+    toast.hidden = false;
+    clearTimeout(weg);
+    weg = window.setTimeout(() => (toast.hidden = true), 8000);
   });
 </script>
