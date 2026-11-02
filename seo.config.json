@@ -1,0 +1,58 @@
+{
+  "slug": "afvalmeldpunt",
+  "site": "https://afvalmeldpunt.nl",
+  "base": "",
+  "githubPagesUrl": "https://michaelbeset-ops.github.io/afvalmeldpunt/",
+  "mode": "klant",
+  "language": "nl-NL",
+  "branche": "dienstverlener",
+  "strategy": ["landelijk", "ai"],
+  "brandTerms": ["afvalmeldpunt", "afval meldpunt", "afvalmeldpunt.nl"],
+  "business": {
+    "schemaType": "Organization",
+    "name": "afvalmeldpunt",
+    "legalName": "",
+    "description": "afvalmeldpunt is een meldsysteem met QR-code voor ondergrondse afvalcontainers: bewoners melden bijplaatsing, een volle of kapotte container zonder app, en de beheerder ziet alle meldingen per container.",
+    "kvk": "",
+    "vatID": "",
+    "foundingYear": "",
+    "founder": "",
+    "showAddress": false,
+    "street": "",
+    "postalCode": "",
+    "city": "",
+    "region": "",
+    "country": "NL",
+    "geo": null,
+    "phone": "",
+    "phoneDisplay": "",
+    "whatsapp": "",
+    "email": "info@sitefront.nl",
+    "priceRange": "",
+    "openingHours": [],
+    "specialHours": [],
+    "areaServed": [],
+    "gbpUrl": "",
+    "reviewLink": "",
+    "gbpPrimaryCategory": "",
+    "sameAs": [],
+    "logo": "/icon-512.png",
+    "image": "/og.jpg",
+    "extra": {}
+  },
+  "services": [
+    {
+      "name": "Meldsysteem tegen bijplaatsing",
+      "path": "/",
+      "summary": "QR-code op elke ondergrondse container; bewoners melden bijplaatsing, een volle of kapotte container zonder app of account, en de beheerder ziet de meldingen per container.",
+      "keywords": ["bijplaatsing ondergrondse containers", "afval naast container melden", "qr-code container melding", "meldsysteem afvalcontainers"]
+    }
+  ],
+  "llmsPages": [
+    { "name": "Demo aanvragen", "path": "/contact/", "summary": "Contact en demo-aanvraag voor gemeenten, afvalinzamelaars en woningcorporaties" }
+  ],
+  "ignorePaths": ["/privacy/", "/inloggen/", "/plaatje/", "/404/"],
+  "gscProperty": "sc-domain:afvalmeldpunt.nl",
+  "psiUrls": ["/", "/contact/"],
+  "aiCrawlers": { "training": "allow" }
+}

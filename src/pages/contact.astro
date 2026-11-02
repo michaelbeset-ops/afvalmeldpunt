@@ -4,18 +4,31 @@ import Basis from '../layouts/Basis.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import DemoFormulier from '../components/DemoFormulier.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { pad } from '../lib/pad';
+import { breadcrumbNode } from '../lib/schema';
+const kruimels = [{ name: 'Home', path: '/' }, { name: 'Demo aanvragen', path: '/contact/' }];
+// Wat de demo laat zien, met links naar de uitleg op de homepage.
+const onderdelen = [
+  ['Het plaatje met QR-code', 'Een aluminium plaatje met eigen QR-code en containernummer, voor op de inworpzuil.', '/#plaatje'],
+  ['De meldpagina voor bewoners', 'Scannen, kiezen wat er aan de hand is (vol, bijgeplaatst afval, defect, stank of ongedierte), eventueel een foto erbij en versturen. Zonder app of account.', '/#meldflow'],
+  ['Het overzicht per container', 'Alle meldingen bij de juiste container, met een status van open via in behandeling tot afgehandeld.', '/#dashboard'],
+  ['Patronen in de meldingen', 'Welke containers steeds opnieuw gemeld worden, zodat u bijplaatsing gericht kunt aanpakken.', '/#inzicht'],
+  ['Optie: vulgraadsensor', 'Een sensor in de container die meldt wanneer hij bijna vol is, in hetzelfde overzicht.', '/#sensor'],
+];
 const stappen = [
   ['We nemen contact op', 'Per mail, of telefonisch als u uw nummer achterlaat.'],
   ['De demo', 'We laten de meldpagina en het dashboard zien en kijken samen hoe het past bij uw containers.'],
   ['Proef of offerte', 'U beslist daarna zelf of u verder wilt.'],
 ];
 ---
-<Basis titel="Demo aanvragen | afvalmeldpunt" omschrijving="Vraag een demo aan van afvalmeldpunt: het meldsysteem met QR-code voor ondergrondse afvalcontainers. Voor gemeenten, afvalinzamelaars en woningcorporaties.">
+<Basis titel="Demo aanvragen: QR-meldsysteem | afvalmeldpunt" omschrijving="Vraag een demo aan van het QR-meldsysteem voor ondergrondse containers. We laten de meldpagina en het overzicht per container zien, voor uw situatie." pageType="ContactPage" schema={[breadcrumbNode(kruimels)]}>
   <Header />
   <main id="hoofdinhoud" class="mx-auto grid max-w-[90rem] gap-14 px-4 pt-10 pb-24 sm:px-8 sm:pt-16 lg:grid-cols-12 lg:gap-8 lg:px-16">
     <div class="lg:col-span-5">
+      <Breadcrumbs items={kruimels} class="mb-6 text-tekst-2" />
       <h1 class="text-[clamp(2.5rem,1.6rem+3.6vw,4.5rem)]">Demo aanvragen</h1>
-      <p class="mt-5 max-w-[28rem] text-lg">Benieuwd hoe het werkt voor uw containers? Laat uw gegevens achter, dan plannen we een demo.</p>
+      <p class="mt-5 max-w-[28rem] text-lg">Benieuwd hoe afvalmeldpunt werkt voor uw ondergrondse containers? Laat uw gegevens achter, dan plannen we een demo. Voor gemeenten, afvalinzamelaars en woningcorporaties.</p>
       <ol class="mt-10 grid gap-6 border-t-2 border-inkt pt-8">
         {stappen.map(([kop, tekst], i) => (
           <li class="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3">
@@ -32,6 +45,28 @@ const stappen = [
     <div class="lg:col-span-6 lg:col-start-7 lg:pt-4">
       <DemoFormulier />
     </div>
+    <section class="lg:col-span-12" aria-labelledby="demo-inhoud-kop">
+      <div class="grid gap-8 border-t-2 border-inkt pt-10 lg:grid-cols-12 lg:gap-8">
+        <div class="lg:col-span-4">
+          <h2 id="demo-inhoud-kop" class="text-[clamp(1.75rem,1.3rem+1.8vw,2.5rem)]">Wat u in de demo ziet</h2>
+          <p class="mt-4 max-w-[26rem] text-lg">De demo laat het hele meldsysteem zien, van het plaatje op de container tot de melding in het overzicht.</p>
+        </div>
+        <ul class="grid gap-px overflow-hidden rounded-md border border-inkt/15 bg-inkt/15 sm:grid-cols-2 lg:col-span-8">
+          {onderdelen.map(([kop, tekst, link]) => (
+            <li class="bg-papier p-6">
+              <h3 class="text-[1.375rem]">{kop}</h3>
+              <p class="mt-2">{tekst}</p>
+              <a class="mt-3 inline-block font-semibold text-bos underline underline-offset-2" href={pad(link)}>Bekijk op de homepage<span class="sr-only">: {kop}</span></a>
+            </li>
+          ))}
+          <li class="bg-papier p-6">
+            <h3 class="text-[1.375rem]">Nog vragen?</h3>
+            <p class="mt-2">Veel antwoorden staan al bij de veelgestelde vragen, bijvoorbeeld of bewoners een app nodig hebben.</p>
+            <a class="mt-3 inline-block font-semibold text-bos underline underline-offset-2" href={pad('/#vragen')}>Naar de veelgestelde vragen</a>
+          </li>
+        </ul>
+      </div>
+    </section>
   </main>
   <Footer />
 </Basis>

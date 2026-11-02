@@ -1,60 +1,23 @@
 ---
-import { pad, preview } from '../lib/pad';
-import { BEDRIJF, kvkBekend } from '../lib/bedrijf';
+import { pad } from '../lib/pad';
 import '../styles/global.css';
 import Cookiemelding from '../components/Cookiemelding.astro';
-interface Props { titel: string; omschrijving: string; noindex?: boolean; jsonld?: Record<string, unknown>[] }
-const { titel, omschrijving, noindex: geenIndex = false, jsonld = [] } = Astro.props;
-// De preview op github.io mag niet in Google: die komt later op afvalmeldpunt.nl.
-const noindex = geenIndex || preview;
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogBeeld = new URL(pad('/og.jpg'), Astro.site);
+import SEO from '../components/SEO.astro';
+// Alle SEO-tags (title, description, canonical, robots, Open Graph, JSON-LD) komen uit <SEO>,
+// gevoed door seo.config.json. noindex komt uit de prop of uit ignorePaths in de config.
+interface Props { titel: string; omschrijving: string; noindex?: boolean; pageType?: string; schema?: Record<string, unknown>[] }
+const { titel, omschrijving, noindex = false, pageType, schema = [] } = Astro.props;
 const ogAlt = 'Aluminium plaatje met QR-code van afvalmeldpunt, met de kop: Melden bij de container zelf, met één scan.';
-// Alleen feiten die vaststaan (naam, adres van de site, taal). Organisatiegegevens zoals KvK,
-// adres en telefoon komen er pas bij als ze zijn aangeleverd.
-const site: Record<string, unknown> = { '@type': 'WebSite', '@id': new URL(pad('/#website'), Astro.site).href, name: 'afvalmeldpunt', url: new URL(pad('/'), Astro.site).href, inLanguage: 'nl-NL' };
-const organisatie = {
-  '@type': 'Organization', '@id': new URL(pad('/#organisatie'), Astro.site).href, name: BEDRIJF.naam, url: BEDRIJF.website, email: BEDRIJF.email,
-  ...(kvkBekend ? { identifier: { '@type': 'PropertyValue', propertyID: 'KvK-nummer', value: BEDRIJF.kvk } } : {}),
-};
-site['publisher'] = { '@id': organisatie['@id'] };
-const pagina = { '@type': 'WebPage', '@id': canonical.href + '#pagina', url: canonical.href, name: titel, description: omschrijving, inLanguage: 'nl-NL', isPartOf: { '@id': site['@id'] } };
-const graaf = { '@context': 'https://schema.org', '@graph': [site, organisatie, pagina, ...jsonld] };
 ---
 <!doctype html>
 <html lang="nl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{titel}</title>
-    <meta name="description" content={omschrijving} />
-    {noindex ? <meta name="robots" content="noindex, nofollow" /> : <link rel="canonical" href={canonical} />}
-    <link rel="icon" href={pad("/favicon.ico")} sizes="48x48" />
-    <link rel="icon" href={pad("/favicon.svg")} type="image/svg+xml" />
-    <link rel="icon" href={pad("/favicon-96x96.png")} type="image/png" sizes="96x96" />
-    <link rel="apple-touch-icon" href={pad("/apple-touch-icon.png")} />
+    <SEO title={titel} description={omschrijving} noindex={noindex} pageType={pageType} imageAlt={ogAlt} schema={schema} />
     <link rel="manifest" href={pad("/site.webmanifest")} />
-    <link rel="sitemap" href={pad("/sitemap-index.xml")} />
     <link rel="alternate" type="text/markdown" title="Samenvatting voor AI-assistenten" href={pad("/llms.txt")} />
-    <meta name="author" content={BEDRIJF.naam} />
     <meta name="theme-color" content="#142019" />
-    <meta property="og:site_name" content="afvalmeldpunt" />
-    <meta property="og:title" content={titel} />
-    <meta property="og:description" content={omschrijving} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content="nl_NL" />
-    <meta property="og:image" content={ogBeeld} />
-    <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={ogAlt} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={titel} />
-    <meta name="twitter:description" content={omschrijving} />
-    <meta name="twitter:image" content={ogBeeld} />
-    <meta name="twitter:image:alt" content={ogAlt} />
-    {!noindex && <script type="application/ld+json" set:html={JSON.stringify(graaf)} />}
   </head>
   <body>
     <a href="#hoofdinhoud" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-wit focus:px-4 focus:py-2 focus:font-semibold focus:text-inkt">Naar de inhoud</a>
