@@ -1,41 +1,57 @@
+// src/pages/llms.txt.ts  (sitefront-seo)
+// /llms.txt: korte Markdown-samenvatting van het bedrijf voor AI-agents en -tools.
+// Google (juni 2026): helpt noch schaadt in Google Search, prima voor andere systemen.
+// Inhoud komt uit seo.config.json; lege velden worden weggelaten (nooit [[AANLEVEREN]] hierin).
+// Uitzetten: dit bestand verwijderen.
 import type { APIRoute } from 'astro';
-import { pad } from '../lib/pad';
-import { BEDRIJF } from '../lib/bedrijf';
+import { seo, business, isDemo, absUrl, openingHoursNL } from '../lib/site';
+// afvalmeldpunt: de zichtbare veelgestelde vragen van de homepage gaan mee als feitelijke Q&A.
 import { VRAGEN } from '../lib/vragen';
 
-// llms.txt: een korte, feitelijke samenvatting in Markdown voor AI-assistenten (llmstxt.org).
-export const GET: APIRoute = ({ site }) => {
-  const u = (p: string) => new URL(pad(p), site).href;
-  const tekst = `# afvalmeldpunt
+type Item = { name: string; path: string; summary?: string };
 
-> Meldsysteem met QR-code voor ondergrondse afvalcontainers in Nederland. Elke container krijgt een aluminium plaatje met een eigen QR-code. Bewoners scannen de code met hun telefoon en melden in de browser, zonder app of account, wat er aan de hand is. De beheerder ziet alle meldingen per container in een online dashboard. Een product van ${BEDRIJF.naam}.
+export const GET: APIRoute = () => {
+  const text = (s: string) => new Response(s, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  if (isDemo) return text('# Ontwerpvoorstel\n\nDit is geen officiële website.\n');
 
-## Hoe het werkt
+  const b = business;
+  const services = ((seo as { services?: Item[] }).services ?? []);
+  const extraPages = ((seo as { llmsPages?: Item[] }).llmsPages ?? []);
+  const adres = b.showAddress
+    ? [b.street, [b.postalCode, b.city].filter(Boolean).join(' ')].filter(Boolean).join(', ')
+    : b.city;
+  const facts: [string, string | undefined][] = [
+    ['Website', absUrl('/')],
+    ['Adres', adres],
+    ['Telefoon', b.phoneDisplay || b.phone],
+    ['E-mail', b.email],
+    ['Werkgebied', b.areaServed?.join(', ')],
+    ['KvK', b.kvk],
+  ];
 
-1. Op elke ondergrondse container komt een aluminium plaatje met een eigen QR-code en containernummer.
-2. Een bewoner scant de code met de camera van de telefoon. De meldpagina van precies die container opent in de browser.
-3. De bewoner kiest wat er aan de hand is: container vol, bijgeplaatst afval, defect of kapot, of stank, ongedierte en overig. Een foto, een opmerking en een e-mailadres voor een bericht als het is opgelost zijn optioneel.
-4. De bewoner krijgt een meldnummer. De melding staat direct in het dashboard bij de juiste container.
-5. In het dashboard krijgt elke melding een status: open, in behandeling of afgehandeld.
+  const lines = [`# ${b.name}`, ''];
+  if (b.description) lines.push(`> ${b.description}`, '');
+  facts.filter(([, v]) => v).forEach(([k, v]) => lines.push(`- ${k}: ${v}`));
+  if (b.openingHours?.length) openingHoursNL().forEach((h) => lines.push(`- Open: ${h}`));
+  lines.push('');
 
-Optie: een vulgraadsensor in de container meldt wanneer de container bijna vol is. Die melding staat in hetzelfde dashboard.
+  const list = (title: string, items: Item[]) => {
+    if (!items.length) return;
+    lines.push(`## ${title}`, '');
+    items.forEach((s) => lines.push(`- [${s.name}](${absUrl(s.path)})${s.summary ? `: ${s.summary}` : ''}`));
+    lines.push('');
+  };
+  list('Diensten', services);
+  list("Belangrijke pagina's", extraPages);
 
-Voor: gemeenten, afvalinzamelaars en woningcorporaties.
+  lines.push('## Veelgestelde vragen', '');
+  VRAGEN.forEach(([v, a]) => lines.push(`### ${v}`, '', a, ''));
 
-## Veelgestelde vragen
-
-${VRAGEN.map(([v, a]) => `### ${v}\n\n${a}`).join('\n\n')}
-
-## Pagina's
-
-- [Startpagina](${u('/')}): uitleg, meldflow, dashboard en veelgestelde vragen
-- [Demo aanvragen](${u('/contact/')}): contactformulier
-- [Privacyverklaring](${u('/privacy/')}): welke gegevens bij een melding worden verwerkt
-
-## Contact
-
-- E-mail: ${BEDRIJF.email}
-- Gemaakt door: ${BEDRIJF.naam} (${BEDRIJF.website})
-`;
-  return new Response(tekst, { headers: { 'Content-Type': 'text/markdown; charset=utf-8' } });
+  const profiles = [b.gbpUrl, ...(b.sameAs || [])].filter(Boolean);
+  if (profiles.length) {
+    lines.push('## Profielen', '');
+    profiles.forEach((u) => lines.push(`- ${u}`));
+    lines.push('');
+  }
+  return text(lines.join('\n'));
 };

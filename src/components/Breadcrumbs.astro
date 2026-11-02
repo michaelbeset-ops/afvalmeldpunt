@@ -1,0 +1,25 @@
+---
+// src/components/Breadcrumbs.astro
+// Zichtbare kruimelnavigatie. De bijbehorende JSON-LD geef je mee aan <SEO schema={[breadcrumbNode(items)]} />
+// zodat alles in één @graph staat. Styling via eigen design tokens (geen standaard Tailwind-kleuren).
+import { absUrl } from '../lib/site';
+interface Props { items: { name: string; path: string }[]; class?: string }
+const { items, class: className = '' } = Astro.props;
+---
+<nav aria-label="Kruimelpad" class={className}>
+  <ol>
+    {items.map((it, i) => (
+      <li>
+        {i < items.length - 1
+          ? <a href={new URL(absUrl(it.path)).pathname}>{it.name}</a>
+          : <span aria-current="page">{it.name}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  ol { display: flex; flex-wrap: wrap; gap: .25rem .5rem; list-style: none; padding: 0; margin: 0; font-size: .875rem; }
+  li + li::before { content: "/"; margin-right: .5rem; opacity: .5; }
+  a { color: inherit; text-decoration: underline; text-underline-offset: .2em; }
+</style>

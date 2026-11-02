@@ -2,3 +2,5 @@ node_modules
 dist
 .astro
 shots
+.seo/out/
+.indexnow-state.json
